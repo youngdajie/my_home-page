@@ -34,6 +34,9 @@
 0.2.0 版本 / 2024年7月16日 支持昼夜模式，by `vue-dark-switch`
 
 0.3.0 版本 / 2024年8月25日 
+
+1.0 版本 / 2026年3月24日 移除`vue-dark-switch`，自制主题切换组件
+
 1. pwa 支持离线访问 by `vite-plugin-pwa`
 2. 打字效果 by `vue-typed-js`
 3. 弹窗触发 by `vue-toastification`
