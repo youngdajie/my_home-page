@@ -78,11 +78,9 @@ body {
 }
 
 #PageLoading {
-	/* background: radial-gradient(white, #d8eaff); */
 	background: #e4e4e4;
 	background-size: 100%;
 	background-position: center;
-	background-color: #fff;
 	height: 100%;
 	width: 100%;
 	position: fixed;
@@ -263,13 +261,13 @@ body {
 }
 
 .iconContainer {
-    width: fit-content;
-    gap: 16px;
-    display: flex;
-    margin-top: 45px;
-    align-items: flex-start;
-    flex-direction: column;
-    margin-left: 36px;
+	width: fit-content;
+	gap: 16px;
+	display: flex;
+	margin-top: 45px;
+	align-items: flex-start;
+	flex-direction: column;
+	margin-left: 36px;
 }
 
 .iconItem {
@@ -579,6 +577,9 @@ footer a:hover {
 	align-items: center;
 	justify-content: center;
 	overflow: hidden;
+	transition: 
+	  opacity 0.35s ease,
+	  transform 0.35s ease;
 }
 
 .tc-img {
@@ -590,7 +591,25 @@ footer a:hover {
 	display: flex;
 }
 
+@keyframes slideUp {
+	0% {
+		opacity: 0;
+		transform: translateY(120px) scale(0.95);
+	}
+
+	60% {
+		opacity: 1;
+		transform: translateY(-10px) scale(1.02);
+	}
+
+	100% {
+		opacity: 1;
+		transform: translateY(0) scale(1);
+	}
+}
+
 .tc-main.active {
+	animation: slideUp 0.5s cubic-bezier(.34, 1.56, .64, 1);
 	opacity: 1;
 }
 
@@ -705,47 +724,54 @@ footer a:hover {
 /* 主题切换css */
 
 html.dark {
-    color: #e5e7eb;
-    background-color: #242938;
-    --main-text-color: #fff;
-    --project-item-bg-color: #22272e;
-    --project-item-left-title-color: #fff;
-    --author-dowm: #e4e4e430
+	color: #e5e7eb;
+	background-color: #242938;
+	--main-text-color: #fff;
+	--project-item-bg-color: #22272e;
+	--project-item-left-title-color: #fff;
+	--author-dowm: #e4e4e430
 }
 
 html.dark .projectItemRight img {
-    opacity: 0
+	opacity: 0
 }
 
 html.dark .title svg {
-    fill: #fff
+	fill: #fff
 }
 
 html.dark .iconContainer .iconItem svg {
-    fill: #fff
+	fill: #fff
 }
 
 html.dark .xiaochengxu-light-dark-background {
-    filter: var(--xiaochengxu-dark-background)
+	filter: var(--xiaochengxu-dark-background)
 }
 
 #universe {
-    display: none
+	display: none
 }
 
 html.dark #universe {
-    display: block
+	display: block
 }
 
 html.dark #PageLoading {
-    background-color: transparent;
-    background: transparent
+	background: #000;
 }
 
 html.dark .iconItem {
-    background: var(--project-item-bg-color)
+	background: var(--project-item-bg-color)
 }
 
 html.dark .dark_none {
-    display: none!important
+	display: none !important
+}
+
+html.dark .projectItem {
+	background-color: #22272eb8;
+}
+
+html.dark .projectItem:hover {
+	background-color: transparent;
 }

@@ -78,3 +78,8 @@ function wx(imageURL) {
 }
 
 
+// 页面加载完成后预加载
+window.addEventListener("load", () => {
+  const preloadImg = new Image();
+  preloadImg.src = "/wxpay.avif";
+});
