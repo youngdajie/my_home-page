@@ -13,7 +13,7 @@
 	padding: 0;
 	box-sizing: border-box;
 	user-select: none;
-	transition: all 0.1s ease;
+	transition: all 0.5s ease;
 }
 
 ::-webkit-scrollbar {
@@ -397,7 +397,7 @@ body {
 	background-color: var(--project-item-hover-color);
 }
 
-.projectItem:hover .projectItemLeft {
+.projectItem:hover .projectItem_okk {
 	width: 100%;
 }
 
@@ -413,35 +413,35 @@ body {
 	font-size: 22px;
 }
 
-.projectItemLeft p {
+.projectItem_okk p {
 	font-size: 13px;
 	margin-top: 8px;
 	color: var(--project-item-left-text-color);
 	padding-right: 6px;
 }
 
-.projectItemLeft h1 {
+.projectItem_okk h1 {
 	font-weight: normal;
 	font-size: 17px;
 	transition: all 0.4s ease;
 	color: var(--project-item-left-title-color);
 }
 
-.projectItemLeft {
+.projectItem_okk {
 	transition: all 0.4s ease;
 	width: 100%;
 	height: 85px;
 	overflow: auto;
 }
 
-.projectItemLeft::-webkit-scrollbar-thumb {
+.projectItem_okk::-webkit-scrollbar-thumb {
 	background-color: #1296db;
 	border-radius: 2em;
 	background-image: none;
 	transform: translateY(var(--thumb-offset, 0));
 }
 
-.projectItemLeft::-webkit-scrollbar {
+.projectItem_okk::-webkit-scrollbar {
 	width: 2px;
 	background-color: transparent;
 }
@@ -501,11 +501,11 @@ footer a:hover {
 		font-size: 16px;
 	}
 
-	.projectItemLeft p {
+	.projectItem_okk p {
 		font-size: 14px;
 	}
 
-	.projectItemLeft h1 {
+	.projectItem_okk h1 {
 		font-size: 15px;
 	}
 

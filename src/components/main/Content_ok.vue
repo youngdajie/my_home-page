@@ -1,9 +1,10 @@
 <script setup>
-	import {
-		ref
-	} from 'vue'
+	import { ref } from 'vue'
+	import projectsData from '../../assets/data/set_link.json';
 
+	// 定义响应式数据
 	const isOpen = ref(false)
+	const projects = projectsData // 直接使用变量，不需要 return
 
 	const toggle = () => {
 		isOpen.value = !isOpen.value
@@ -23,69 +24,14 @@
 		</div>
 		<div v-show="!isOpen">
 			<div class="projectList">
-				<!-- 项目列表开始 -->
-				<!---->
-				<!-- 				<p class="projectList_p"><code>IPV 4/6</code><a href="https://ipw.cn" target="_blank"
-						style=" right: 0; position: absolute; padding-right: 10px;">网络自检🔍</a></p> -->
-				<!---->
-				<a class="projectItem" target="_blank" href="https://box.yangjie.site">
-					<!-- 项目项开始 -->
-					<div class="projectItemLeft">
-						<h1>杂记</h1>
-						<p>已迁到 hexo，折腾不动了，长期耕耘，不瞎搞了。<br><br>用腾讯云 CDN 加速，全站开了 HTTP 缓存的（20天强缓存），之后的访问就会快到飞起</p>
+				<a class="projectItem" target="_blank" v-for="(item, index) in projects" :key="index" :href="item.url">
+					<div class="projectItem_okk">
+						<h1>{{ item.title }}</h1>
+						<p v-html="item.desc"></p>
 					</div>
-					<!-- 项目项结束 -->
 				</a>
-				<!---->
-				<a class="projectItem" target="_blank" href="https://nav.yangjie.site">
-					<!-- 项目项开始 -->
-					<div class="projectItemLeft projectItemLeft_one">
-						<h1>导航</h1>
-						<p class="projectItemLeft_other"><s>做网站的起点，一切的开始。很久没动了，等找个时间再好好优化一下吧，呜呜</s></p>
-						<p class="other_one" style="font-size: 20px;">项目封存
-						</p>
-					</div>
-					<!-- 项目项结束 -->
-				</a>
-				<a class="projectItem" target="_blank" href="https://foot.yangjie.site/">
-					<!-- 项目项开始 -->
-					<div class="projectItemLeft">
-						<h1>足迹</h1>
-						<p>还是想在外面多走走，祖国的大好河山还是看得太少了</p>
-					</div>
-					<!-- 项目项结束 -->
-				</a>
-				<a class="projectItem" target="_blank" href="https://yuanshen.yangjie.site/">
-					<!-- 项目项开始 -->
-					<div class="projectItemLeft">
-						<h1>原神，启动！</h1>
-						<p>大佬开源的 web音乐，我用来放原神的 BGM 了</p>
-					</div>
-					<!-- 项目项结束 -->
-				</a>
-				<a class="projectItem" target="_blank" href="https://1p.yangjie.site">
-					<!-- 项目项开始 -->
-					<div class="projectItemLeft">
-						<h1>面板管理</h1>
-						<p>层层加密，重兵把守，外人休闯！</p>
-					</div>
-					<!-- 项目项结束 -->
-				</a>
-				<!-- <hr
-					style="position: relative;margin: 40px auto;border: 4px dashed #1296db;width: calc(100% - 32%);border-radius: 3px;"> -->
-				<!---->
-				<a class="projectItem" target="_blank" href="https://pan.yangjie.site">
-					<!-- 项目项开始 -->
-					<div class="projectItemLeft">
-						<h1>OpenList</h1>
-						<p>OpenList 是一个支持多种存储的文件列表程序🗂️，是一个有韧性、长期治理、社区驱动的 AList 分支🔀，旨在防御基于信任的开源攻击🛡️。<br><br>搭建在腾讯轻量服务器上</p>
-					</div>
-					<!-- 项目项结束 -->
-				</a>
-				<!---->
 			</div>
 		</div>
-		<!-- 项目列表结束 -->
 		<div class="title dark_none">
 			<svg t="1705257823317" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
 				p-id="7833" width="26px" height="26px">
@@ -438,12 +384,7 @@
 		fill: #ffc107;
 	}
 
-	.projectItemLeft_one:hover .projectItemLeft_other {
-		display: none;
-	}
-
-	.projectItemLeft_other:hover .other_one {
-		display: block;
+	.other_one {
 		font-size: 20px;
 	}
 </style>
