@@ -66,15 +66,3 @@ document.addEventListener("DOMContentLoaded", function () {
   }, 530);
 
 });
-
-function wx(imageURL) {
-  toggleClass(".tc", "active");
-  toggleClass(".tc-main", "active");
-
-  var tcMainElement = document.querySelector(".tc-img");
-  if (imageURL) {
-    tcMainElement.src = imageURL;
-  }
-}
-
-

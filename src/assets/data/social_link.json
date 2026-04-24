@@ -1,0 +1,34 @@
+[
+  {
+    "tip": "Github",
+    "url": "https://github.com/youngdajie",
+	"target": "_blank",
+    "icon": "Github"
+  },
+  {
+    "tip": "Mail",
+    "url": "mailto:ok@yangjie.site",
+	"target": "",
+    "icon": "Mail"
+  },
+  {
+    "tip": "捐赠",
+    "url": "",
+    "icon": "Donate",
+	"target": "",
+    "click": "wx('/wxpay.avif')"
+  },
+  {
+    "tip": "B站",
+    "url": "https://space.bilibili.com/646325099",
+	"target": "_blank",
+    "icon": "Bilibili"
+  },
+  {
+    "tip": "强刷新",
+    "url": "",
+	"target": "",
+    "icon": "Refresh",
+	"click": "resetSWCacheAndRefresh()"
+  }
+]
