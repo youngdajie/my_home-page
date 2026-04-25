@@ -729,9 +729,7 @@ html.dark {
 	--project-item-left-title-color: #fff;
 	--author-dowm: #e4e4e430
 }
-html.dark .tc-img {
-	opacity: .5;
-}
+
 html.dark .projectItemRight img {
 	opacity: 0
 }
