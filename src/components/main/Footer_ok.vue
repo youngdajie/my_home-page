@@ -13,8 +13,6 @@
 		</div>
 		<div class="footer-right">
 			<li>
-				<a href="https://up.yangjie.site" target="_blank"><img style="width: 48px;"
-						src="/src/assets/images/jk.svg" alt="网站监控" title="监控"></a>
 				<a href="https://www.foreverblog.cn/go.html" target="_blank"><img src="/src/assets/images/222.png"
 						alt="虫洞" title="虫洞"></a>
 				<a href="https://cloud.tencent.com/login" target="_blank"><img src="/src/assets/images/txy.png"

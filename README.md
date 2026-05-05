@@ -2,6 +2,27 @@
 
 ![效果](introduce.avif)
 
+项目结构：
+```
+my_home-page/
+├── public/
+│   ├── favicon.svg
+│   ├── manifest.json
+│   ├── script.js
+│   └── wxpay.avif
+├── src/
+│   ├── assets/
+│   ├── components/
+│   ├── App.vue
+│   ├── main.js
+│   └── style.css
+├── index.html
+├── introduce.avif
+├── LICENSE
+├── package.json
+├── README.md
+└── vite.config.js
+```
 
 由 `Vite` & `Vue` 写的。这里只包括 `src 项目目录` 和 `public 公共目录`，及 `根 HTML 文件`。其余依赖需要自行配置。
 
@@ -37,8 +58,13 @@
 
 1.0 版本 / 2026年3月24日 移除`vue-dark-switch`，自制主题切换组件
 
+5.0 版本 / 2026年5月5日 添加强制刷新 SW 缓存 的按钮，点击注销缓存和自动刷新网页
+
 1. pwa 支持离线访问 by `vite-plugin-pwa`
 2. 打字效果 by `vue-typed-js`
 3. 弹窗触发 by `vue-toastification`
 4. 一些前端效果借鉴的 **https://uiverse.io/**
 5. logo 是我妹给我设计的
+6. ChatGPT 写的代码，我啥也不会
+7. 自定义内容修改在 路径：`my_home-page\src\assets` 下的两个 json 中
+8. `ipw.cn` 已死，缅怀
