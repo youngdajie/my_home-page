@@ -8,8 +8,7 @@
 			本人工作特殊，联系不上，请见谅！
 			<br>
 			浏览器建议 PC | <a href="https://www.google.cn/intl/zh-CN/chrome/" target="_blank">Chrome</a>，手机 | <a
-				href="https://viayoo.com/zh-cn/" target="_blank">Via</a><br><a
-				href="https://ipw.cn/ipv6webcheck/?site=www.yangjie.site" target="_blank">本站支持 IPv6</a>
+				href="https://viayoo.com/zh-cn/" target="_blank">Via</a><br><a>本站支持 IPv6</a>
 		</div>
 		<div class="footer-right">
 			<li>

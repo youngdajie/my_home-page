@@ -5,9 +5,9 @@
     "desc": "已迁到 hexo，折腾不动了，长期耕耘，不瞎搞了。<br><br>用腾讯云 CDN 加速，全站开了 HTTP 缓存的（20天强缓存），之后的访问就会快到飞起"
   },
   {
-    "title": "导航",
-    "url": "https://nav.yangjie.site",
-    "desc": "<span class='other_one' style='font-size: 20px;'>项目封存</span>"
+    "title": "监控",
+    "url": "https://up.yangjie.site",
+    "desc": "基于 UptimeRobot 接口做的监控网站，接口十分有九分的不稳定，多刷新，只当个在线检测器，监测结果不准，优势是去服务器化，零成本"
   },
   {
     "title": "足迹",
