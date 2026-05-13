@@ -6,7 +6,7 @@
 			<span class="gradientText">Yang.JIE</span>
 		</div>
 		<div class="description">
-			<a target="_blank" href="https://clock.yangjie.site/">😁</a>
+			<a target="_blank" href="https://cdn.yangjie.site/sites/clock">😁</a>
 			<span class="purpleText"> 业余的</span> 开发者 / 喜欢折腾各种
 			<span class="purpleText"> 新鲜事物</span>
 		</div>
