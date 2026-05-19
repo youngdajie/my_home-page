@@ -28,5 +28,20 @@
     "title": "OpenList",
     "url": "https://pan.yangjie.site",
     "desc": "OpenList 是一个支持多种存储的文件列表程序🗂️，是一个有韧性、长期治理、社区驱动的 AList 分支🔀，旨在防御基于信任的开源攻击🛡️。<br><br>搭建在腾讯轻量服务器上"
+  },
+  {
+    "title": "文档",
+    "url": "https://docs.yangjie.site",
+    "desc": "基于 VuePress & vuepress-theme-plume 搭建的个人备忘录站点"
+  },
+  {
+    "title": "壁纸",
+    "url": "https://picture.yangjie.site",
+    "desc": "由 Node.js 驱动的壁纸收藏网站，GitHub托管，EdgeOne Pages 分发"
+  },
+  {
+    "title": "CDN",
+    "url": "https://cdn.yangjie.site",
+    "desc": "GitHub 存储 + EdgeOne Pages 分发，兼顾 PicX 的极简静态资源图床"
   }
 ]
