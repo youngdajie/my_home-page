@@ -14,7 +14,7 @@
 			<li>
 				<a href="https://www.foreverblog.cn/go.html" target="_blank"><img src="/src/assets/images/222.png"
 						alt="虫洞" title="虫洞"></a>
-				<a href="https://cloud.tencent.com/login" target="_blank"><img src="/src/assets/images/txy.png"
+				<a href="https://console.cloud.tencent.com/edgeone/zones" target="_blank"><img src="/src/assets/images/txy.png"
 						alt="腾讯云" title="腾讯云"></a>
 			</li>
 		</div>
