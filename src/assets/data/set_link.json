@@ -2,7 +2,7 @@
   {
     "title": "杂记",
     "url": "https://box.yangjie.site",
-    "desc": "已迁到 hexo，折腾不动了，长期耕耘，不瞎搞了。<br><br>用腾讯云 CDN 加速，全站开了 HTTP 缓存的（20天强缓存），之后的访问就会快到飞起"
+    "desc": "已迁到 hexo，折腾不动了，长期耕耘，不瞎搞了。<br><br>托管于 EdgeOne Makers，全站开了 HTTP 缓存的（20天强缓存），之后的访问就会快到飞起"
   },
   {
     "title": "监控",
@@ -37,11 +37,11 @@
   {
     "title": "壁纸",
     "url": "https://picture.yangjie.site",
-    "desc": "由 Node.js 驱动的壁纸收藏网站，GitHub托管，EdgeOne Pages 分发"
+    "desc": "由 Node.js 驱动的壁纸收藏网站，GitHub托管，EdgeOne Makers 分发"
   },
   {
     "title": "CDN",
     "url": "https://cdn.yangjie.site",
-    "desc": "GitHub 存储 + EdgeOne Pages 分发，兼顾 PicX 的极简静态资源图床"
+    "desc": "GitHub 存储 + EdgeOne Makers 分发，兼顾 PicX 的极简静态资源图床"
   }
 ]
