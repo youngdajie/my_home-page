@@ -351,7 +351,7 @@ body {
 	align-items: flex-start;
 	gap: 20px;
 	width: 80%;
-	border: #1296db 6px dashed;
+	border: #1296db 6px double;
 	border-radius: 12px;
 	padding: 20px 6px 16px 6px;
 }
