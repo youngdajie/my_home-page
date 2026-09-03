@@ -13,6 +13,15 @@ my_home-page/
 ├── src/
 │   ├── assets/
 │   ├── components/
+│   │   ├── main/
+│   │   │   ├── DonationDialog.vue
+│   │   │   ├── MainContent.vue
+│   │   │   ├── SiteFooter.vue
+│   │   │   └── SiteHeader.vue
+│   │   └── others/
+│   │       ├── DarkModeToggle.vue
+│   │       └── icon/
+│   │           └── icon.vue
 │   ├── App.vue
 │   ├── main.js
 │   └── style.css
@@ -68,3 +77,5 @@ my_home-page/
 6. ChatGPT 写的代码，我啥也不会
 7. 自定义内容修改在 路径：`my_home-page\src\assets` 下的两个 json 中
 8. `ipw.cn` 已死，缅怀
+
+5.5 版本 / 2026年9月3日，让 AI 帮我实现了卡片瀑布流，显示关闭动画，修改了一些 CSS 类名称，去除了一些无用冗余的代码
