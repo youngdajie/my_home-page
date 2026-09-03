@@ -17,7 +17,6 @@ function toggleClass(selector, className) {
 
 document.addEventListener("DOMContentLoaded", function () {
 
-  const switchCheckbox = document.getElementById("myonoffswitch");
   /*夜间自动打开暗色主题
     const currentTime = new Date();
     const currentHour = currentTime.getHours();
@@ -37,26 +36,26 @@ document.addEventListener("DOMContentLoaded", function () {
   //   }
   // });
 
-  var projectItems = document.querySelectorAll(".projectItem");
+  var subsiteCards = document.querySelectorAll(".subsite-card");
 
-  function checkProjectItems() {
-    for (var i = 0; i < projectItems.length; i++) {
-      var projectItem = projectItems[i];
-      var projectItemTop = projectItem.getBoundingClientRect().top;
+  function revealVisibleCards() {
+    for (var i = 0; i < subsiteCards.length; i++) {
+      var subsiteCard = subsiteCards[i];
+      var cardTop = subsiteCard.getBoundingClientRect().top;
 
-      if (projectItemTop < window.innerHeight * 1.05) {
-        projectItem.classList.add("fade-in-visible");
+      if (cardTop < window.innerHeight * 1.05) {
+        subsiteCard.classList.add("is-visible");
       }
     }
   }
 
-  window.addEventListener("scroll", checkProjectItems);
-  window.addEventListener("resize", checkProjectItems);
+  window.addEventListener("scroll", revealVisibleCards);
+  window.addEventListener("resize", revealVisibleCards);
 
-  checkProjectItems();
+  revealVisibleCards();
 
-  var pageLoading = document.querySelector("#PageLoading");
-  var center = document.getElementById("PageLoading-zyyo-center");
+  var pageLoading = document.querySelector("#page-loading");
+  var center = document.getElementById("page-loading__spinner");
   setTimeout(function () {
     pageLoading.style.opacity = "0";
     center.style.height = "400px";

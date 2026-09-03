@@ -1,6 +1,6 @@
 <template>
 	<footer>
-		<div class="footer-left">
+		<div class="footer__info">
 			小杰 © 2019-2026<br><a href="https://beian.miit.gov.cn/" target="_blank">蜀ICP备2021020461号-2</a><br><a
 				href="https://beian.mps.gov.cn/#/query/webSearch?code=51052102510649"
 				target="_blank">川公网安备51052102510649号</a>
@@ -10,7 +10,7 @@
 			浏览器建议 PC | <a href="https://www.google.cn/intl/zh-CN/chrome/" target="_blank">Chrome</a>，手机 | <a
 				href="https://viayoo.com/zh-cn/" target="_blank">Via</a><br><a href="https://ipv6test.wcode.net/?q=www.yangjie.site&ipv6-only=1" target="_blank">支持 IPv6</a>
 		</div>
-		<div class="footer-right">
+		<div class="footer__badges">
 			<li>
 				<a href="https://www.foreverblog.cn/go.html" target="_blank"><img src="/src/assets/images/222.png"
 						alt="虫洞" title="虫洞"></a>
@@ -22,11 +22,11 @@
 </template>
 
 <style>
-	.footer-left {
+	.footer__info {
 		width: 60%;
 	}
 
-	.footer-right li a img {
+	.footer__badges li a img {
 		width: 122px;
 	}
 
@@ -40,7 +40,7 @@
 		margin: 100px 0 0 0;
 	}
 
-	.footer-right li {
+	.footer__badges li {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
@@ -48,19 +48,19 @@
 	}
 
 	@media screen and (max-width: 1176px) {
-		.min_1176_none {
+		.below-1176-hidden {
 			display: none;
 		}
 
-		.min_1176_none img {
+		.below-1176-hidden img {
 			display: none;
 		}
 
-		.footer-left {
+		.footer__info {
 			width: 100%;
 		}
 
-		.footer-right {
+		.footer__badges {
 			display: none;
 		}
 	}

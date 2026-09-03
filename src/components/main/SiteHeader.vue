@@ -1,23 +1,23 @@
 <template>
 	<header>
 		<!-- 头部开始 -->
-		<div class="welcome">
+		<div class="hero-title">
 			HI,<br /> I'm
-			<span class="gradientText">Yang.JIE</span>
+			<span class="gradient-text">Yang.JIE</span>
 		</div>
-		<div class="description">
+		<div class="hero-description">
 			<a target="_blank" href="https://cdn.yangjie.site/sites/clock">😁</a>
-			<span class="purpleText"> 业余的</span> 开发者 / 喜欢折腾各种
-			<span class="purpleText"> 新鲜事物</span>
+			<span class="purple-text"> 业余的</span> 开发者 / 喜欢折腾各种
+			<span class="purple-text"> 新鲜事物</span>
 		</div>
-		<div class="description d-2">
+		<div class="hero-description typed-quote">
 			<p id="typing-text"></p>
 		</div>
-		<div class="iconContainer">
+		<div class="social-links">
 			<a 
 			  v-for="(link, index) in socialLinks" 
 			  :key="index" 
-			  class="iconItem" 
+			  class="social-link"
 			  :data-tip="link.tip" 
 			  :href="link.url || 'javascript:void(0)'"
 			  :target="link.target || null" 
@@ -137,11 +137,11 @@
 		}
 	}
 	
-	// 重写 wx 函数 - 用于显示捐赠图片
-	const wx = (imageURL) => {
+	// 打开捐赠弹窗
+	const openDonationDialog = () => {
 		// 使用原生 JavaScript 操作 DOM
-		toggleClass(".tc", "active");
-		toggleClass(".tc-main", "active");
+		toggleClass(".donation-dialog", "is-open");
+		toggleClass(".donation-dialog__panel", "is-open");
 	}
 	
 	// 辅助函数：切换类名
@@ -176,7 +176,7 @@
 			} else if (link.tip === '捐赠') {
 				return {
 					...link,
-					click: () => wx(link.url), // 使用箭头函数包装，传递参数
+					click: openDonationDialog,
 					url: undefined // 防止默认跳转行为
 				}
 			}
@@ -186,28 +186,13 @@
 </script>
 
 <style scoped>
-	/*打字效果*/
-	.typed-text {
-		font-family: monospace;
-		white-space: nowrap;
-		overflow: hidden;
-		border-right: .15em solid orange;
-		animation: caret 1s steps(1) infinite;
-	}
-
-	@keyframes caret {
-		50% {
-			border-color: transparent;
-		}
-	}
-
 	#typing-text {
 		display: inline;
 		margin-right: 10px;
 		font-size: 16px;
 	}
 
-	.d-2 {
+	.typed-quote {
 		height: 64px;
 	}
 </style>

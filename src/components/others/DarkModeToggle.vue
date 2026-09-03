@@ -56,7 +56,7 @@
 
 <style scoped>
 	.dark-mode-toggle {
-		background: var(--project-item-bg-color);
+		background: var(--subsite-card-bg-color);
 		border: none;
 		width: 48px;
 		height: 32px;
@@ -65,7 +65,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		color: var(--project-item-left-title-color);
+		color: var(--subsite-card-title-color);
 		transition: background-color 0.2s;
 	}
 
