@@ -36,23 +36,27 @@ document.addEventListener("DOMContentLoaded", function () {
   //   }
   // });
 
-  var subsiteCards = document.querySelectorAll(".subsite-card");
+  var cardObserver = new IntersectionObserver(function (entries) {
+    for (var i = 0; i < entries.length; i++) {
+      if (entries[i].isIntersecting) {
+        entries[i].target.classList.add("is-visible");
+        cardObserver.unobserve(entries[i].target);
+      }
+    }
+  }, { rootMargin: "0px 0px 15% 0px" });
 
-  function revealVisibleCards() {
-    for (var i = 0; i < subsiteCards.length; i++) {
-      var subsiteCard = subsiteCards[i];
-      var cardTop = subsiteCard.getBoundingClientRect().top;
-
-      if (cardTop < window.innerHeight * 1.05) {
-        subsiteCard.classList.add("is-visible");
+  function observeSubsiteCards() {
+    var cards = document.querySelectorAll(".subsite-card");
+    for (var i = 0; i < cards.length; i++) {
+      if (!cards[i].classList.contains("is-visible")) {
+        cardObserver.observe(cards[i]);
       }
     }
   }
 
-  window.addEventListener("scroll", revealVisibleCards);
-  window.addEventListener("resize", revealVisibleCards);
-
-  revealVisibleCards();
+  observeSubsiteCards();
+  var cardMutationObserver = new MutationObserver(observeSubsiteCards);
+  cardMutationObserver.observe(document.body, { childList: true, subtree: true });
 
   var pageLoading = document.querySelector("#page-loading");
   var center = document.getElementById("page-loading__spinner");

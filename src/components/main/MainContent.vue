@@ -3,12 +3,34 @@
 	import projectsData from '../../assets/data/set_link.json';
 
 	// 定义响应式数据
-	const isOpen = ref(false)
+	const isOpen = ref(true)
 	const projects = projectsData.map((item, index) => ({ ...item, id: String(index) }))
 	const subsiteGridRef = ref(null)
+	const subsiteCollapseRef = ref(null)
 	const columnCount = ref(3)
 	const columns = ref([])
 	let resizeTimer = null
+	let isAnimating = false
+	const collapseDuration = 450
+
+	const waitForHeightTransition = (element) =>
+		new Promise((resolve) => {
+			let settled = false
+			const finish = () => {
+				if (settled) return
+				settled = true
+				clearTimeout(timeout)
+				element.removeEventListener('transitionend', onTransitionEnd)
+				resolve()
+			}
+			const onTransitionEnd = (event) => {
+				if (event.target === element && event.propertyName === 'height') {
+					finish()
+				}
+			}
+			element.addEventListener('transitionend', onTransitionEnd)
+			const timeout = setTimeout(finish, collapseDuration + 200)
+		})
 
 	const resetColumns = () => {
 		columns.value = Array.from({ length: columnCount.value }, (_, column) =>
@@ -44,12 +66,56 @@
 		if (columns.value.length !== count) {
 			resetColumns()
 		}
-		nextTick(balanceByHeight)
+		if (isOpen.value) {
+			nextTick(balanceByHeight)
+		}
 	}
 
 	const onResize = () => {
 		clearTimeout(resizeTimer)
 		resizeTimer = setTimeout(refreshLayout, 150)
+	}
+
+	const collapseSubsite = async () => {
+		if (!subsiteCollapseRef.value || !isOpen.value) return
+		isOpen.value = false
+		const element = subsiteCollapseRef.value
+		element.style.height = `${element.offsetHeight}px`
+		element.style.overflow = 'hidden'
+		element.offsetHeight // 强制回流
+		requestAnimationFrame(() => {
+			element.style.height = '0px'
+		})
+		await waitForHeightTransition(element)
+		element.style.height = '0px'
+		element.style.visibility = 'hidden'
+	}
+
+	const expandSubsite = async () => {
+		if (!subsiteCollapseRef.value || isOpen.value) return
+		isOpen.value = true
+		const element = subsiteCollapseRef.value
+		element.style.visibility = 'visible'
+		element.style.height = '0px'
+		element.style.overflow = 'hidden'
+		element.offsetHeight
+		requestAnimationFrame(() => {
+			element.style.height = `${element.scrollHeight}px`
+		})
+		await waitForHeightTransition(element)
+		element.style.height = ''
+		nextTick(balanceByHeight)
+	}
+
+	const toggleSubsite = async () => {
+		if (isAnimating) return
+		isAnimating = true
+		if (isOpen.value) {
+			await collapseSubsite()
+		} else {
+			await expandSubsite()
+		}
+		isAnimating = false
 	}
 
 	onMounted(() => {
@@ -65,27 +131,24 @@
 		window.removeEventListener('resize', onResize)
 	})
 
-	const toggle = () => {
-		isOpen.value = !isOpen.value
-	}
 </script>
 
 <template>
 	<content>
 		<!-- 内容开始 -->
-		<div class="section-title section-title--collapsible" @click="isOpen = !isOpen">
+		<div class="section-title section-title--collapsible" @click="toggleSubsite">
 			<svg t="1705257422086" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
 				p-id="1891" width="26px" height="26px">
 				<path
 					d="M629.333333 202.666667v213.333333h277.333334v448h-512v-213.333333h-277.333334v-448h512z m213.333334 277.333333h-213.333334v170.666667h-170.666666v149.333333h384v-320z m-277.333334-213.333333h-384v320h213.333334v-170.666667h170.666666v-149.333333z m0 213.333333h-106.666666v106.666667h106.666666v-106.666667z"
 					p-id="1892"></path>
-			</svg> 子网站 / Subsites <div class="section-title__toggle" :class="{ 'is-open': !isOpen }"></div>
+			</svg> 子网站 / Subsites <div class="section-title__toggle" :class="{ 'is-open': isOpen }"></div>
 		</div>
-		<div v-show="!isOpen">
+		<div ref="subsiteCollapseRef" class="subsite-collapse">
 			<div class="subsite-grid" ref="subsiteGridRef">
 				<div v-for="(column, columnIndex) in columns" :key="columnIndex" class="subsite-grid__column">
-					<a v-for="item in column" :key="item.id" class="subsite-card" :data-id="item.id" target="_blank"
-						:href="item.url">
+					<a v-for="item in column" :key="item.id" class="subsite-card" :data-id="item.id"
+						target="_blank" :href="item.url">
 						<div class="subsite-card__body">
 							<h1 class="subsite-card__title">{{ item.title }}</h1>
 							<p class="subsite-card__description" v-html="item.desc"></p>
@@ -149,6 +212,11 @@
 
 	.section-title__toggle.is-open {
 		transform: rotate(90deg);
+	}
+
+	.subsite-collapse {
+		overflow: hidden;
+		transition: height 0.45s ease;
 	}
 
 	</style>
