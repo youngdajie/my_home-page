@@ -1,13 +1,3 @@
-document.onkeydown = function (e) {
-  if (e.key === "F12") {
-    e.preventDefault();
-  }
-};
-
-document.body.oncontextmenu = function (e) {
-  e.preventDefault();
-};
-
 function toggleClass(selector, className) {
   var elements = document.querySelectorAll(selector);
   elements.forEach(function (element) {
@@ -17,24 +7,6 @@ function toggleClass(selector, className) {
 
 document.addEventListener("DOMContentLoaded", function () {
 
-  /*夜间自动打开暗色主题
-    const currentTime = new Date();
-    const currentHour = currentTime.getHours();
-    if (currentHour >= 18 || currentHour < 6) {
-        switchCheckbox.checked = false;
-        changeTheme(1);
-    }
-  */
-
-  // switchCheckbox.addEventListener("change", function () {
-  //   if (themeState == "Light") {
-  //     changeTheme("Blue");
-  //   } else if (themeState == "Dark") {
-  //     changeTheme("Light");
-  //   } else if (themeState == "Blue") {
-  //     changeTheme("Dark");
-  //   }
-  // });
 
   var cardObserver = new IntersectionObserver(function (entries) {
     for (var i = 0; i < entries.length; i++) {
@@ -68,4 +40,21 @@ document.addEventListener("DOMContentLoaded", function () {
     pageLoading.style.backgroundSize = "200%";
   }, 530);
 
+});
+
+function wx(imageURL) {
+  toggleClass(".donation-dialog", "is-open");
+  toggleClass(".donation-dialog__panel", "is-open");
+
+  var qrImageElement = document.querySelector(".donation-dialog__qr");
+  if (imageURL) {
+    qrImageElement.src = imageURL;
+  }
+}
+
+
+// 页面加载完成后预加载
+window.addEventListener("load", () => {
+  const preloadImg = new Image();
+  preloadImg.src = "/wxpay.avif";
 });
