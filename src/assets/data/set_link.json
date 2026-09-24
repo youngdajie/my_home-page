@@ -2,7 +2,7 @@
   {
     "title": "杂记",
     "url": "https://box.yangjie.site",
-    "desc": "已迁到 Nuxt，折腾不动了，长期耕耘，不瞎搞了。<br><br>托管于 EdgeOne Makers，全站开了 HTTP 缓存的（20天强缓存），之后的访问就会快到飞起"
+    "desc": "已迁到 Nuxt，折腾不动了，长期耕耘，不瞎搞了。<br><br>托管于 EdgeOne Makers，跟随平台的缓存规则，国内速度快"
   },
   {
     "title": "监控",
@@ -20,14 +20,14 @@
     "desc": "大佬开源的 web音乐，我用来放原神的 BGM 了"
   },
   {
-    "title": "面板管理",
-    "url": "https://1p.yangjie.site",
-    "desc": "层层加密，重兵把守，外人休闯！"
-  },
-  {
     "title": "飞牛，启动！",
     "url": "https://fnos.net/yangjay",
     "desc": "部署在内网的飞牛面板，用的友善的 ARM 机子，来管理局域网内的服务"
+  },
+  {
+    "title": "Openlist",
+    "url": "https://30105a5a767c-0.yangjay.fnos.net/",
+    "desc": "内网的 Openlist 服务，借用飞牛穿透服务。也有 serverless 的 Openlist，但体验很差"
   },
   {
     "title": "文档",
@@ -37,11 +37,11 @@
   {
     "title": "壁纸",
     "url": "https://wallpaper.yangjie.site",
-    "desc": "由 Node.js 驱动的壁纸收藏网站，GitHub托管，EdgeOne Makers 分发"
+    "desc": "由 Node.js&Next.js 驱动的壁纸收藏网站，CNB 托管，EdgeOne Makers 分发，资源由 JSDMirror CDN 提供加速和外链服务"
   },
   {
     "title": "CDN",
     "url": "https://cdn.yangjie.site",
-    "desc": "GitHub 存储 + EdgeOne Makers 分发，兼顾 PicX 的极简静态资源图床"
+    "desc": "自建静态资源分发服务，稳定自用，CNB 存储 + EdgeOne Makers 分发，用自己写的程序管理文件，再见 PicX"
   }
 ]
