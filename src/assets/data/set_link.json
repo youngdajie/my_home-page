@@ -25,16 +25,6 @@
     "desc": "部署在内网的飞牛面板，用的友善的 ARM 机子，来管理局域网内的服务"
   },
   {
-    "title": "Openlist",
-    "url": "https://30105a5a767c-0.yangjay.fnos.net/",
-    "desc": "内网的 Openlist 服务，借用飞牛穿透服务。也有 serverless 的 Openlist，但体验很差"
-  },
-  {
-    "title": "文档",
-    "url": "https://docs.yangjie.site",
-    "desc": "基于 VuePress & vuepress-theme-plume 搭建的个人备忘录站点"
-  },
-  {
     "title": "壁纸",
     "url": "https://wallpaper.yangjie.site",
     "desc": "由 Node.js&Next.js 驱动的壁纸收藏网站，CNB 托管，EdgeOne Makers 分发，资源由 JSDMirror CDN 提供加速和外链服务"
