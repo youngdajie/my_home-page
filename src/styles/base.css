@@ -15,9 +15,12 @@
 }
 
 /* ------------------------------- 重置 -------------------------------
- * 注意：这里刻意不再使用 `transition: all`。
- * 全量过渡会把布局属性（width/height/font-size）一起做动画，主题切换时
- * 整页重排、掉帧。只对"颜色类"属性做统一过渡，几何动画交给各组件自己声明。
+ * 这里刻意**不给元素挂全局过渡**：
+ *  1. `transition: all` 会把 width/height/font-size 一起做动画，主题切换时整页重排；
+ *  2. 只过渡颜色（color）同样是坑 —— 文字颜色渐变时浏览器每帧都要按新颜色重新
+ *     栅格化字形，亚像素抗锯齿位置随之变化，肉眼看到的就是「文字在抖 / 闪」。
+ *     实测一次昼夜切换文字会经过 118 个中间灰度值。
+ * 需要过渡的地方一律由组件自己声明（卡片、社交坞、页脚链接等都已经有了）。
  */
 * {
 	margin: 0;
@@ -25,8 +28,16 @@
 	box-sizing: border-box;
 	user-select: none;
 	-webkit-tap-highlight-color: transparent;
-	transition: background-color 0.35s ease, color 0.35s ease, border-color 0.35s ease,
-		fill 0.35s ease;
+}
+
+/* 昼夜切换的那一两帧里，把全局过渡彻底关掉。
+   否则各组件自己声明的 color 过渡仍会在切换时逐帧重算字形，出现抖动闪烁。
+   切换完成立刻移除，正常交互（hover 等）的过渡完全不受影响。 */
+html.is-theme-switching,
+html.is-theme-switching *,
+html.is-theme-switching *::before,
+html.is-theme-switching *::after {
+	transition: none !important;
 }
 
 img,

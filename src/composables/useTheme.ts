@@ -29,9 +29,22 @@ const writeSavedPreference = (mode: ThemeMode): void => {
 	}
 }
 
-/** 把主题落到 <html> / theme-color meta / color-scheme 上 */
+/** 切换的那一两帧挂在 <html> 上，用来全局禁用过渡 */
+const SWITCHING_CLASS = 'is-theme-switching'
+
+/**
+ * 把主题落到 <html> / theme-color meta / color-scheme 上。
+ *
+ * 关键：切换前后会给 <html> 挂上 SWITCHING_CLASS 临时关掉所有过渡。
+ * 原因是组件自己声明的 `transition: color` 会在切换时把文字颜色逐帧重算，
+ * 浏览器每帧都要重新栅格化字形（实测一次切换经过上百个中间灰度），
+ * 亚像素抗锯齿位置随之漂移，看起来就是文字在抖。
+ * 关掉过渡后颜色直接黑↔白一次到位，完全没有中间态。
+ */
 const applyTheme = (dark: boolean): void => {
 	const root = document.documentElement
+
+	root.classList.add(SWITCHING_CLASS)
 	root.classList.toggle('dark', dark)
 	root.style.colorScheme = dark ? 'dark' : 'light'
 
@@ -39,6 +52,13 @@ const applyTheme = (dark: boolean): void => {
 	if (meta) {
 		meta.content = dark ? '#242938' : siteConfig.meta.themeColor
 	}
+
+	// 读一次布局属性，强制浏览器带着「无过渡」的样式完成这次重绘
+	void root.offsetHeight
+	// 等两帧再摘掉，确保切换那一帧已经落地
+	requestAnimationFrame(() => {
+		requestAnimationFrame(() => root.classList.remove(SWITCHING_CLASS))
+	})
 }
 
 const resolveByPreference = (preference: ThemePreference): boolean => {
