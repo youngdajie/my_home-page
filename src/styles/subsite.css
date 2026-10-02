@@ -1,0 +1,257 @@
+/**
+ * subsite.css —— 子网站卡片、技能面板、小程序预览
+ *
+ * 卡片质感分三层，都只靠伪元素，不加多余 DOM：
+ *  - ::before  左侧品牌色光条：从中心向上下展开，两端淡出（替换原来那根硬邦邦的实心竖条）
+ *  - ::after   跟随光标的品牌色光斑：鼠标移到哪亮到哪（Vue 侧写入 --spot-x / --spot-y）
+ *  - 投影        近景 + 远景中性阴影叠一层品牌色柔光，避免单层彩色模糊的"廉价感"
+ */
+
+.subsite-grid {
+	display: flex;
+	align-items: flex-start;
+	gap: 20px;
+	width: 80%;
+	border: 1px solid var(--card-border);
+	border-radius: 16px;
+	padding: 18px 14px;
+	background: rgba(255, 255, 255, 0.28);
+}
+
+html.dark .subsite-grid {
+	background: rgba(255, 255, 255, 0.02);
+}
+
+.subsite-grid__column {
+	flex: 1 1 0;
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+}
+
+.subsite-card {
+	--card-accent: var(--accent-blue);
+	/* 光斑初始位置，避免还没移动鼠标时跳到左上角 */
+	--spot-x: 50%;
+	--spot-y: 50%;
+
+	position: relative;
+	display: block;
+	width: 100%;
+	height: fit-content;
+	padding: 18px;
+	overflow: hidden;
+	border: 1px solid var(--card-border);
+	border-radius: 14px;
+	background-color: var(--card-bg);
+
+	/* 入场初态，配合 v-reveal 加上的 .is-visible */
+	opacity: 0;
+	transform: translateY(16px) scale(0.985);
+
+	/* transform 只有一条过渡：入场和悬浮共用，0.45s 的强 ease-out 两边都不拖沓 */
+	transition: opacity 0.5s ease, transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+		background-color 0.32s ease, border-color 0.32s ease, box-shadow 0.32s ease;
+}
+
+/* 入场完成态。
+   必须排在 :hover 之前 —— 两者权重相同（.subsite-card + 一个类/伪类），
+   靠后写的赢，放后面会把 hover 的 translateY 一起吃掉。 */
+.subsite-card.is-visible {
+	opacity: 1;
+	transform: translateY(0) scale(1);
+}
+
+/* ------------------------- 左侧品牌色光条 ------------------------- */
+
+.subsite-card::before {
+	content: '';
+	position: absolute;
+	left: 0;
+	top: 50%;
+	z-index: 1;
+	width: 3px;
+	height: 68%;
+	border-radius: 0 2px 2px 0;
+	background: linear-gradient(
+		180deg,
+		transparent 0%,
+		var(--card-accent) 38%,
+		var(--card-accent) 62%,
+		transparent 100%
+	);
+	opacity: 0;
+	transform: translateY(-50%) scaleY(0.22);
+	transition: opacity 0.28s ease, transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ------------------------- 跟随光标的光斑 ------------------------- */
+
+.subsite-card::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+	border-radius: inherit;
+	pointer-events: none;
+	opacity: 0;
+	/* 渐变用满不透明度的品牌色，整体浓度由 opacity 控制。
+	   半径要小于卡片宽度，否则铺满整张卡就变成一层色雾、看不出"光斑"了 */
+	background: radial-gradient(
+		150px circle at var(--spot-x) var(--spot-y),
+		var(--card-accent),
+		transparent 55%
+	);
+	transition: opacity 0.3s ease;
+}
+
+/* 悬浮 / 键盘聚焦：抬起来 + 双层阴影 + 点亮两层装饰 */
+.subsite-card:hover,
+.subsite-card:focus-visible {
+	background-color: var(--card-hover-bg);
+	border-color: var(--card-border-hover);
+	transform: translateY(var(--card-lift));
+	box-shadow: 0 1px 1px var(--card-shadow-near), 0 12px 24px -16px var(--card-shadow-far),
+		0 26px 52px -30px var(--card-accent);
+}
+
+.subsite-card:hover::before,
+.subsite-card:focus-visible::before {
+	opacity: 1;
+	transform: translateY(-50%) scaleY(1);
+}
+
+.subsite-card:hover::after,
+.subsite-card:focus-visible::after {
+	opacity: var(--card-spot-opacity);
+}
+
+.subsite-card:focus-visible {
+	outline: 2px solid var(--card-accent);
+	outline-offset: 3px;
+}
+
+/* ------------------------------ 卡片内容 ------------------------------ */
+
+.subsite-card__body {
+	position: relative;
+	z-index: 1;
+	width: 100%;
+	height: fit-content;
+}
+
+.subsite-card__title {
+	/* 给右上角的箭头留位，长标题提前折行 */
+	padding-right: 22px;
+	font-size: 17px;
+	font-weight: 600;
+	color: var(--card-title-color);
+	transition: color 0.3s ease;
+}
+
+.subsite-card:hover .subsite-card__title,
+.subsite-card:focus-visible .subsite-card__title {
+	color: var(--card-accent);
+}
+
+.subsite-card__description {
+	margin-top: 8px;
+	padding-right: 6px;
+	font-size: 13px;
+	line-height: 1.6;
+	color: var(--card-text-color);
+}
+
+/* 右上角 ↗：提示"这是外链"，悬浮时从右下方向左上归位 */
+.subsite-card__arrow {
+	position: absolute;
+	top: 15px;
+	right: 15px;
+	z-index: 1;
+	width: 14px;
+	height: 14px;
+	color: var(--card-accent);
+	opacity: 0;
+	transform: translate(-5px, 5px);
+	transition: opacity 0.3s ease, transform 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.subsite-card__arrow svg {
+	width: 100%;
+	height: 100%;
+	fill: none;
+	stroke: currentColor;
+	stroke-width: 1.5;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+}
+
+.subsite-card:hover .subsite-card__arrow,
+.subsite-card:focus-visible .subsite-card__arrow {
+	opacity: 0.9;
+	transform: translate(0, 0);
+}
+
+/* ------------------------------ 技能面板 ------------------------------ */
+
+.skills-panel {
+	padding: 18px;
+	width: 100%;
+}
+
+.skills-panel img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.skills-panel #skills-mobile-image {
+	display: none;
+}
+
+/* ---------------------------- 小程序预览 ---------------------------- */
+
+.mini-program-preview {
+	width: 66%;
+	border-radius: 15px;
+}
+
+/* -------------------------------- 响应式 -------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+	.subsite-card,
+	.subsite-card::before,
+	.subsite-card::after,
+	.subsite-card__arrow {
+		transition-duration: 0.01ms;
+	}
+}
+
+@media (max-width: 600px) {
+	.subsite-grid {
+		flex-direction: column;
+		width: 100%;
+		padding: 14px 12px;
+	}
+
+	.subsite-card__title {
+		font-size: 15px;
+	}
+
+	.subsite-card__description {
+		font-size: 14px;
+	}
+
+	.skills-panel #skills-mobile-image {
+		display: block;
+	}
+
+	.skills-panel #skills-desktop-image {
+		display: none;
+	}
+
+	.mini-program-preview {
+		width: 100%;
+	}
+}

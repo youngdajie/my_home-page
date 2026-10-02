@@ -1,24 +1,40 @@
 <!doctype html>
-<html>
+<html lang="zh-CN">
 	<head>
 		<meta charset="utf-8">
-		<link rel="manifest" href="/manifest.json">
-		<meta http-equiv="X-UA-Compatible" content="IE=edge">
-		<link rel="icon" href="/favicon.ico">
-		<link rel="stylesheet" href="https://cdn.jsdmirror.com/ajax/libs/lxgw-wenkai-screen-webfont/1.7.0/style.min.css">
-		<meta name="description" content="这里是网站的主页，所有子网站的引导站，欢迎访问。可以在必应、谷歌搜索引擎中搜索【yangjie.site】">
-		<meta name="keywords" content="youngdajie,xiaojie,小杰主页,引导页,www.yangjie.site">
-		<meta property="og:title" content="小杰主页">
-		<meta property="og:type" content="website">
-		<meta property="og:locale" content="zh_CN">
-		<meta property="og:url" content="https://yangjie.site">
-		<meta property="og:description" content="人生就像一艘小船，内心指引方向">
-		<meta property="og:site_name" content="小杰主页">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-		<script defer src="/script.js"> </script>
-		<title>小杰主页</title>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+		<!-- 以下是 site.config.ts 的 meta 注入，改配置即可，不用动这里 -->
+		<title>%SITE_TITLE%</title>
+		<meta name="description" content="%SITE_DESCRIPTION%">
+		<meta name="keywords" content="%SITE_KEYWORDS%">
+		<meta name="author" content="%SITE_AUTHOR%">
+		<meta name="theme-color" content="%SITE_THEME_COLOR%">
+
+		<meta property="og:title" content="%SITE_TITLE%">
+		<meta property="og:type" content="website">
+		<meta property="og:locale" content="%SITE_LOCALE%">
+		<meta property="og:url" content="%SITE_URL%">
+		<meta property="og:description" content="%SITE_OG_DESCRIPTION%">
+		<meta property="og:site_name" content="%SITE_NAME%">
+
+		<link rel="canonical" href="%SITE_URL%">
+
+		<!-- 图标三件套：ico 兼容老浏览器 / svg 矢量 / iOS 桌面图标 -->
+		<link rel="icon" href="/favicon.ico" sizes="any">
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+		<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+		<link rel="manifest" href="/manifest.json">
+
+		<!-- 正文字体走 CDN，提前建连 -->
+		<link rel="preconnect" href="https://cdn.jsdmirror.com" crossorigin>
+		<link
+			rel="stylesheet"
+			href="https://cdn.jsdmirror.com/ajax/libs/lxgw-wenkai-screen-webfont/1.7.0/style.min.css"
+		>
 	</head>
 	<body id="xiaojie_index">
-		<script type="module" src="/src/main.js"></script>
+		<script type="module" src="/src/main.ts"></script>
 	</body>
 </html>

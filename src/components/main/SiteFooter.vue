@@ -1,68 +1,90 @@
 <template>
 	<footer>
 		<div class="footer__info">
-			小杰 © 2019-2026<br><a href="https://beian.miit.gov.cn/" target="_blank">蜀ICP备2021020461号-2</a><br><a
-				href="https://beian.mps.gov.cn/#/query/webSearch?code=51052102510649"
-				target="_blank">川公网安备51052102510649号</a>
-			<br>
-			本人工作特殊，联系不上，请见谅！
-			<br>
-			浏览器建议 PC | <a href="https://www.google.cn/intl/zh-CN/chrome/" target="_blank">Chrome</a>，手机 | <a
-				href="https://viayoo.com/zh-cn/" target="_blank">Via</a><br><a
-				href="https://ipv6test.wcode.net/?q=www.yangjie.site&ipv6-only=1" target="_blank">支持 IPv6</a>
+			{{ footer.owner }} © {{ copyrightRange() }}
+			<template v-for="link in footer.links" :key="link.href">
+				<br />
+				<a :href="link.href" target="_blank" rel="noopener noreferrer">{{ link.text }}</a>
+			</template>
+			<br />
+			{{ footer.notice }}
+			<br />
+			{{ footer.browserTip.label }}
+			<template v-for="(item, index) in footer.browserTip.entries" :key="item.text"><span v-if="index > 0">，</span><span>{{ item.device }} | </span><a :href="item.href" target="_blank" rel="noopener noreferrer">{{ item.text }}</a></template>
+			<br />
+			<a :href="footer.ipv6.href" target="_blank" rel="noopener noreferrer">{{ footer.ipv6.text }}</a>
 		</div>
-		<div class="footer__badges">
-			<li>
-				<a href="https://www.foreverblog.cn/go.html" target="_blank"><img src="/src/assets/images/222.png"
-						alt="虫洞" title="虫洞"></a>
-				<a href="https://console.cloud.tencent.com/edgeone/makers" target="_blank"><img
-						src="/src/assets/images/txy.png" alt="腾讯云" title="腾讯云"></a>
+
+		<ul class="footer__badges">
+			<li v-for="badge in footer.badges" :key="badge.alt">
+				<a :href="badge.href" target="_blank" rel="noopener noreferrer">
+					<img :src="badge.src" :alt="badge.alt" :title="badge.alt" loading="lazy" />
+				</a>
 			</li>
-		</div>
+		</ul>
 	</footer>
 </template>
 
-<style>
-.footer__info {
-	width: 60%;
-}
+<script setup lang="ts">
+	import { copyrightRange, siteConfig } from '@/site.config'
 
-.footer__badges li a img {
-	width: 122px;
-}
+	const { footer } = siteConfig
+</script>
 
-footer {
-	display: flex;
-	color: var(--main-text-color);
-	font-size: 16px;
-	flex-direction: row;
-	align-items: center;
-	justify-content: space-between;
-	margin: 100px 0 0 0;
-}
-
-.footer__badges li {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	gap: 10px;
-}
-
-@media screen and (max-width: 1176px) {
-	.below-1176-hidden {
-		display: none;
-	}
-
-	.below-1176-hidden img {
-		display: none;
+<style scoped>
+	footer {
+		display: flex;
+		color: var(--footer-text-color, var(--main-text-color));
+		font-size: 16px;
+		flex-direction: row;
+		align-items: center;
+		justify-content: space-between;
+		margin: 100px 0 0 0;
+		padding: 5px;
 	}
 
 	.footer__info {
-		width: 100%;
+		width: 60%;
+		line-height: 1.7;
 	}
 
 	.footer__badges {
-		display: none;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 10px;
+		list-style: none;
 	}
-}
+
+	.footer__badges a {
+		display: block;
+		transition: transform 0.3s ease, opacity 0.3s ease;
+	}
+
+	.footer__badges a:hover {
+		transform: translateY(-3px);
+	}
+
+	.footer__badges img {
+		width: 122px;
+		display: block;
+	}
+
+	footer a {
+		transition: color 0.3s ease;
+	}
+
+	footer a:hover {
+		color: var(--accent-blue);
+	}
+
+	@media screen and (max-width: 1176px) {
+		.footer__info {
+			width: 100%;
+		}
+
+		.footer__badges {
+			display: none;
+		}
+	}
 </style>

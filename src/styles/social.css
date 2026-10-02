@@ -1,0 +1,187 @@
+/**
+ * social.css —— 社交 / 功能入口（横向玻璃坞）
+ *
+ * 从「竖排小方块」改成横向玻璃胶囊：
+ *  - 整条坞是一块玻璃面（blur + 顶部内高光 + 柔和外投影），比一堆独立方块更整体、更醒目
+ *  - 每个入口是一枚圆形按钮，悬浮时品牌色从中心放大铺满 + 同色光晕
+ *  - 提示气泡改到按钮正上方，带向下的小箭头，不再挤在侧面
+ *  - 功能组与昼夜切换之间有一条细分隔线
+ */
+
+.social-links {
+	position: relative;
+	/* 用 flex 而不是 inline-flex：inline 级盒子会被模板里的换行空白顶出一个缩进，
+	   跟上方标题的左边缘对不齐 */
+	display: flex;
+	align-items: center;
+	gap: var(--dock-gap);
+	width: fit-content;
+	margin-top: 40px;
+	padding: var(--dock-padding);
+	border: 1px solid var(--dock-border);
+	border-radius: 999px;
+	background: var(--dock-bg);
+	/* 只写标准属性：Vite 8 的压缩器（Lightning CSS）会自动补 -webkit-。
+	   反过来手写 `-webkit-backdrop-filter` 放在标准属性之后，会被它当成
+	   后出现的同族声明，把标准属性整条删掉。 */
+	backdrop-filter: blur(14px) saturate(160%);
+	box-shadow: var(--dock-shadow), inset 0 1px 0 var(--dock-highlight);
+}
+
+/* 功能组 / 主题切换之间的分隔线 */
+.social-links__divider {
+	flex: none;
+	width: 1px;
+	height: 20px;
+	margin: 0 4px;
+	border-radius: 1px;
+	background: var(--dock-divider);
+}
+
+.social-link {
+	/* 主色由组件通过内联 --social-accent 注入，缺省回落品牌蓝 */
+	--social-accent: var(--accent-blue);
+
+	position: relative;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: var(--dock-item);
+	height: var(--dock-item);
+	padding: 0;
+	border: 0;
+	border-radius: 50%;
+	background: transparent;
+	color: var(--dock-icon);
+	cursor: pointer;
+	appearance: none;
+	/* 让 ::before 的 z-index:-1 只退到图标后面，不会漏到坞的底层去 */
+	isolation: isolate;
+	transition: transform 0.32s cubic-bezier(0.34, 1.56, 0.64, 1), color 0.24s ease,
+		box-shadow 0.3s ease;
+}
+
+/* 品牌色圆底：从中心放大铺满 */
+.social-link::before {
+	content: '';
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	border-radius: inherit;
+	background: var(--social-accent);
+	opacity: 0;
+	transform: scale(0.66);
+	transition: opacity 0.24s ease, transform 0.34s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.social-link:hover,
+.social-link:focus-visible {
+	color: #fff;
+	transform: translateY(-4px);
+	box-shadow: 0 10px 20px -10px var(--social-accent);
+}
+
+.social-link:hover::before,
+.social-link:focus-visible::before {
+	opacity: 1;
+	transform: scale(1);
+}
+
+.social-link:focus-visible {
+	outline: 2px solid var(--social-accent);
+	outline-offset: 2px;
+}
+
+.social-link:active {
+	transform: translateY(-1px) scale(0.94);
+}
+
+/* --------------------------- 上方提示气泡 + 箭头 --------------------------- */
+
+.social-link::after {
+	content: attr(data-tip);
+	position: absolute;
+	left: 50%;
+	bottom: calc(100% + 14px);
+	z-index: 30;
+	padding: 6px 10px;
+	border-radius: 8px;
+	white-space: nowrap;
+	font-size: 12px;
+	font-weight: 500;
+	line-height: 1;
+	color: #fff;
+	background: var(--social-accent);
+	box-shadow: 0 10px 22px -10px rgba(0, 0, 0, 0.5);
+	opacity: 0;
+	pointer-events: none;
+	transform: translateX(-50%) translateY(4px) scale(0.94);
+	transform-origin: center bottom;
+	transition: opacity 0.18s ease, transform 0.26s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.social-link__caret {
+	position: absolute;
+	left: 50%;
+	bottom: calc(100% + 9px);
+	z-index: 20;
+	width: 8px;
+	height: 8px;
+	background: var(--social-accent);
+	opacity: 0;
+	pointer-events: none;
+	transform: translateX(-50%) rotate(45deg) scale(0.4);
+	transition: opacity 0.18s ease, transform 0.26s ease;
+}
+
+.social-link:hover::after,
+.social-link:focus-visible::after {
+	opacity: 1;
+	transform: translateX(-50%) translateY(0) scale(1);
+}
+
+.social-link:hover .social-link__caret,
+.social-link:focus-visible .social-link__caret {
+	opacity: 1;
+	transform: translateX(-50%) rotate(45deg) scale(1);
+}
+
+/* 强刷新进行中：图标持续旋转 */
+.social-link.is-busy svg {
+	animation: social-spin 0.9s linear infinite;
+}
+
+@keyframes social-spin {
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+/* 触摸设备没有 hover，气泡只会粘连，直接不渲染 */
+@media (hover: none) {
+	.social-link::after,
+	.social-link__caret {
+		display: none;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.social-link,
+	.social-link::before,
+	.social-link::after,
+	.social-link__caret {
+		transition-duration: 0.01ms;
+	}
+}
+
+@media (max-width: 600px) {
+	:root {
+		--dock-item: 40px;
+		--dock-gap: 2px;
+		--dock-padding: 5px;
+	}
+
+	.social-links {
+		margin-top: 28px;
+	}
+}

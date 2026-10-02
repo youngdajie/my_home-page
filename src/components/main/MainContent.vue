@@ -1,202 +1,127 @@
-<script setup>
-	import { ref, nextTick, onMounted, onBeforeUnmount } from 'vue'
-	import projectsData from '../../assets/data/set_link.json';
+<script setup lang="ts">
+	import { useTemplateRef } from 'vue'
+	import { siteConfig } from '@/site.config'
+	import { useSubsiteLayout } from '@/composables/useSubsiteLayout'
+	import { vReveal } from '@/directives/reveal'
 
-	// 定义响应式数据
-	const isOpen = ref(true)
-	const projects = projectsData.map((item, index) => ({ ...item, id: String(index) }))
-	const subsiteGridRef = ref(null)
-	const subsiteCollapseRef = ref(null)
-	const columnCount = ref(3)
-	const columns = ref([])
-	let resizeTimer = null
-	let isAnimating = false
-	const collapseDuration = 450
+	const { subsites, skills, miniProgram } = siteConfig
 
-	const waitForHeightTransition = (element) =>
-		new Promise((resolve) => {
-			let settled = false
-			const finish = () => {
-				if (settled) return
-				settled = true
-				clearTimeout(timeout)
-				element.removeEventListener('transitionend', onTransitionEnd)
-				resolve()
-			}
-			const onTransitionEnd = (event) => {
-				if (event.target === element && event.propertyName === 'height') {
-					finish()
-				}
-			}
-			element.addEventListener('transitionend', onTransitionEnd)
-			const timeout = setTimeout(finish, collapseDuration + 200)
-		})
+	const gridRef = useTemplateRef<HTMLElement>('subsiteGrid')
+	const collapseRef = useTemplateRef<HTMLElement>('subsiteCollapse')
 
-	const resetColumns = () => {
-		columns.value = Array.from({ length: columnCount.value }, (_, column) =>
-			projects.filter((_, index) => index % columnCount.value === column)
-		)
+	const { columns, isOpen, toggle } = useSubsiteLayout(subsites.items, { gridRef, collapseRef })
+
+	/** 卡片强调色透传给 CSS 变量 */
+	const accentStyle = (accent?: string): Record<string, string> =>
+		accent ? { '--card-accent': accent } : {}
+
+	/**
+	 * 把光标位置写进卡片局部坐标，驱动 ::after 的品牌色光斑。
+	 * 只在有指针的悬浮设备上跑；触摸设备通常不会触发 pointermove。
+	 */
+	const trackPointer = (event: PointerEvent): void => {
+		if (event.pointerType === 'touch') return
+		const el = event.currentTarget as HTMLElement | null
+		if (!el) return
+		const rect = el.getBoundingClientRect()
+		el.style.setProperty('--spot-x', `${event.clientX - rect.left}px`)
+		el.style.setProperty('--spot-y', `${event.clientY - rect.top}px`)
 	}
-
-	// 根据卡片真实渲染高度，把项目依次放进当前最矮的一列
-	const balanceByHeight = () => {
-		if (!subsiteGridRef.value || !projects.length) return
-		const nodes = subsiteGridRef.value.querySelectorAll('.subsite-card')
-		if (nodes.length !== projects.length) return
-
-		const heights = new Map()
-		nodes.forEach((node) => heights.set(node.dataset.id, node.offsetHeight || 0))
-
-		const result = Array.from({ length: columnCount.value }, () => [])
-		const sums = Array(columnCount.value).fill(0)
-		for (const item of projects) {
-			let shortest = 0
-			for (let i = 1; i < sums.length; i++) {
-				if (sums[i] < sums[shortest]) shortest = i
-			}
-			result[shortest].push(item)
-			sums[shortest] += heights.get(item.id) || 0
-		}
-		columns.value = result
-	}
-
-	const refreshLayout = () => {
-		const count = window.innerWidth <= 600 ? 1 : 3
-		columnCount.value = count
-		if (columns.value.length !== count) {
-			resetColumns()
-		}
-		if (isOpen.value) {
-			nextTick(balanceByHeight)
-		}
-	}
-
-	const onResize = () => {
-		clearTimeout(resizeTimer)
-		resizeTimer = setTimeout(refreshLayout, 150)
-	}
-
-	const collapseSubsite = async () => {
-		if (!subsiteCollapseRef.value || !isOpen.value) return
-		isOpen.value = false
-		const element = subsiteCollapseRef.value
-		element.style.height = `${element.offsetHeight}px`
-		element.style.overflow = 'hidden'
-		element.offsetHeight // 强制回流
-		requestAnimationFrame(() => {
-			element.style.height = '0px'
-		})
-		await waitForHeightTransition(element)
-		element.style.height = '0px'
-		element.style.visibility = 'hidden'
-	}
-
-	const expandSubsite = async () => {
-		if (!subsiteCollapseRef.value || isOpen.value) return
-		isOpen.value = true
-		const element = subsiteCollapseRef.value
-		element.style.visibility = 'visible'
-		element.style.height = '0px'
-		element.style.overflow = 'hidden'
-		element.offsetHeight
-		requestAnimationFrame(() => {
-			element.style.height = `${element.scrollHeight}px`
-		})
-		await waitForHeightTransition(element)
-		element.style.height = ''
-		nextTick(balanceByHeight)
-	}
-
-	const toggleSubsite = async () => {
-		if (isAnimating) return
-		isAnimating = true
-		if (isOpen.value) {
-			await collapseSubsite()
-		} else {
-			await expandSubsite()
-		}
-		isAnimating = false
-	}
-
-	onMounted(() => {
-		refreshLayout()
-		window.addEventListener('resize', onResize)
-		if (document.fonts?.ready) {
-			document.fonts.ready.then(() => nextTick(balanceByHeight))
-		}
-	})
-
-	onBeforeUnmount(() => {
-		clearTimeout(resizeTimer)
-		window.removeEventListener('resize', onResize)
-	})
-
 </script>
 
 <template>
-	<content>
-		<!-- 内容开始 -->
-		<div class="section-title section-title--collapsible" @click="toggleSubsite">
-			<svg t="1705257422086" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
-				p-id="1891" width="26px" height="26px">
+	<div class="content">
+		<!-- 子网站 -->
+		<h2
+			class="section-title section-title--collapsible"
+			role="button"
+			tabindex="0"
+			:aria-expanded="isOpen"
+			@click="toggle"
+			@keydown.enter.prevent="toggle"
+			@keydown.space.prevent="toggle"
+		>
+			<svg class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" width="26" height="26">
 				<path
 					d="M629.333333 202.666667v213.333333h277.333334v448h-512v-213.333333h-277.333334v-448h512z m213.333334 277.333333h-213.333334v170.666667h-170.666666v149.333333h384v-320z m-277.333334-213.333333h-384v320h213.333334v-170.666667h170.666666v-149.333333z m0 213.333333h-106.666666v106.666667h106.666666v-106.666667z"
-					p-id="1892"></path>
-			</svg> 子网站 / Subsites <div class="section-title__toggle" :class="{ 'is-open': isOpen }"></div>
-		</div>
-		<div ref="subsiteCollapseRef" class="subsite-collapse">
-			<div class="subsite-grid" ref="subsiteGridRef">
+				/>
+			</svg>
+			{{ subsites.title }}
+			<span class="section-title__toggle" :class="{ 'is-open': isOpen }"></span>
+		</h2>
+
+		<div ref="subsiteCollapse" class="subsite-collapse">
+			<div ref="subsiteGrid" class="subsite-grid">
 				<div v-for="(column, columnIndex) in columns" :key="columnIndex" class="subsite-grid__column">
-					<a v-for="item in column" :key="item.id" class="subsite-card" :data-id="item.id"
-						target="_blank" :href="item.url">
+					<a
+						v-for="item in column"
+						:key="item.id"
+						v-reveal
+						class="subsite-card"
+						:data-id="item.id"
+						:style="accentStyle(item.accent)"
+						:href="item.url"
+						target="_blank"
+						rel="noopener noreferrer"
+						@pointerenter="trackPointer"
+						@pointermove="trackPointer"
+					>
+						<span class="subsite-card__arrow" aria-hidden="true">
+							<svg viewBox="0 0 14 14" xmlns="http://www.w3.org/2000/svg">
+								<path d="M3.6 10.4 10.4 3.6M10.4 3.6H5.1M10.4 3.6v5.3" />
+							</svg>
+						</span>
 						<div class="subsite-card__body">
-							<h1 class="subsite-card__title">{{ item.title }}</h1>
+							<h3 class="subsite-card__title">{{ item.title }}</h3>
+							<!-- 文案来自 site.config.ts，属于自维护内容 -->
 							<p class="subsite-card__description" v-html="item.desc"></p>
 						</div>
 					</a>
 				</div>
 			</div>
 		</div>
-		<div class="section-title dark-mode-hidden">
-			<svg t="1705257823317" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
-				p-id="7833" width="26px" height="26px">
+
+		<!-- 技能 -->
+		<h2 class="section-title dark-mode-hidden">
+			<svg class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" width="26" height="26">
 				<path
 					d="M395.765333 586.570667h-171.733333c-22.421333 0-37.888-22.442667-29.909333-43.381334L364.768 95.274667A32 32 0 0 1 394.666667 74.666667h287.957333c22.72 0 38.208 23.018667 29.632 44.064l-99.36 243.882666h187.050667c27.509333 0 42.186667 32.426667 24.042666 53.098667l-458.602666 522.56c-22.293333 25.408-63.626667 3.392-54.976-29.28l85.354666-322.421333zM416.714667 138.666667L270.453333 522.581333h166.869334a32 32 0 0 1 30.933333 40.181334l-61.130667 230.954666 322.176-367.114666H565.312c-22.72 0-38.208-23.018667-29.632-44.064l99.36-243.882667H416.714667z"
-					p-id="7834"></path>
-			</svg> 技能 / Skills
-		</div>
+				/>
+			</svg>
+			{{ skills.title }}
+		</h2>
 		<div class="skills-panel dark-mode-hidden">
-			<!-- 技能开始 -->
-			<!-- 前往https://skillicons.dev/
-            生成，一个pc端，一个移动端，区别是一行的个数 -->
-			<img id="skills-desktop-image" src="../../assets/images/skillPc.svg" alt="" srcset="">
-			<img id="skills-mobile-image" src="../../assets/images/skillWap.svg" alt="" srcset="">
-		</div>
-		<div class="section-title dark-mode-hidden below-1176-hidden">
-			<svg t="1749913207810" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
-				p-id="6167" id="mx_n_1749913207811" width="26px" height="26px"
-				xmlns:xlink="http://www.w3.org/1999/xlink">
-				<path d="M588.8 588.8m-281.6 0a281.6 281.6 0 1 0 563.2 0 281.6 281.6 0 1 0-563.2 0Z" fill="#000000"
-					p-id="6168"></path>
-				<path
-					d="M803.84 768l199.68 199.68c10.24 10.24 10.24 25.6 0 35.84-10.24 10.24-25.6 10.24-35.84 0L768 803.84c-81.92 71.68-189.44 117.76-307.2 117.76-256 0-460.8-204.8-460.8-460.8s204.8-460.8 460.8-460.8 460.8 204.8 460.8 460.8c0 117.76-46.08 225.28-117.76 307.2zM460.8 870.4c225.28 0 409.6-184.32 409.6-409.6s-184.32-409.6-409.6-409.6-409.6 184.32-409.6 409.6 184.32 409.6 409.6 409.6z"
-					fill="#000000" p-id="6169" data-spm-anchor-id="a313x.search_index.0.i10.117c3a81prSnSL" class="">
-				</path>
-			</svg> 小程序 / 公众号
-		</div>
-		<div style="display: flex; flex-direction: column; justify-content: center; align-items: center; width: 80%;"
-			class="dark-mode-hidden below-1176-hidden">
-			<img class="mini-program-preview" src="../../assets/images/1.png" alt="小程序">
+			<!-- 前往 https://skillicons.dev/ 生成，一个 PC 端一个移动端，区别是一行的个数 -->
+			<img id="skills-desktop-image" :src="skills.desktopSrc" alt="技术栈" />
+			<img id="skills-mobile-image" :src="skills.mobileSrc" alt="技术栈" />
 		</div>
 
-		<!-- 技能结束 -->
-	</content>
-	<!-- 内容结束 -->
+		<!-- 小程序 / 公众号 -->
+		<h2 class="section-title dark-mode-hidden below-1176-hidden">
+			<svg class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" width="26" height="26">
+				<path d="M588.8 588.8m-281.6 0a281.6 281.6 0 1 0 563.2 0 281.6 281.6 0 1 0-563.2 0Z" />
+				<path
+					d="M803.84 768l199.68 199.68c10.24 10.24 10.24 25.6 0 35.84-10.24 10.24-25.6 10.24-35.84 0L768 803.84c-81.92 71.68-189.44 117.76-307.2 117.76-256 0-460.8-204.8-460.8-460.8s204.8-460.8 460.8-460.8 460.8 204.8 460.8 460.8c0 117.76-46.08 225.28-117.76 307.2zM460.8 870.4c225.28 0 409.6-184.32 409.6-409.6s-184.32-409.6-409.6-409.6-409.6 184.32-409.6 409.6 184.32 409.6 409.6 409.6z"
+				/>
+			</svg>
+			{{ miniProgram.title }}
+		</h2>
+		<div class="mini-program-panel dark-mode-hidden below-1176-hidden">
+			<img class="mini-program-preview" :src="miniProgram.image" :alt="miniProgram.alt" />
+		</div>
+	</div>
 </template>
 
 <style scoped>
 	.section-title--collapsible {
 		cursor: pointer;
+		user-select: none;
+	}
+
+	.section-title--collapsible:focus-visible {
+		outline: 2px solid var(--accent-blue);
+		outline-offset: 4px;
+		border-radius: 8px;
 	}
 
 	.section-title__toggle {
@@ -219,4 +144,11 @@
 		transition: height 0.45s ease;
 	}
 
-	</style>
+	.mini-program-panel {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+		width: 80%;
+	}
+</style>

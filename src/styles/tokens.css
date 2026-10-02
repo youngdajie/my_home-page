@@ -1,0 +1,76 @@
+/**
+ * tokens.css —— 设计变量集中管理
+ * 亮色为默认值，暗色在 html.dark 下覆盖。
+ */
+
+:root {
+	/* 品牌色 */
+	--accent-blue: #1296db;
+	--accent-blue-soft: #1296db1f;
+	--gradient-start: #607df1;
+	--gradient-middle: #1296db;
+	--gradient-end: #607df1;
+	--purple-text-color: #1296db;
+
+	/* 基础 */
+	--main-bg-color: #fff;
+	--main-text-color: #000000;
+	--footer-text-color: var(--main-text-color);
+	--author-dowm: #e4e4e4;
+
+	/* 卡片 */
+	--card-bg: #ecececb8;
+	--card-hover-bg: #ffffff;
+	--card-title-color: #000000;
+	--card-text-color: #7e7e7e;
+	--card-border: rgba(17, 24, 39, 0.06);
+	--card-border-hover: rgba(17, 24, 39, 0.14);
+	/* 中性投影分两层，品牌色那层在 subsite.css 里单独拼（token 里不能引用 --card-accent） */
+	--card-shadow-near: rgba(15, 23, 42, 0.05);
+	--card-shadow-far: rgba(15, 23, 42, 0.2);
+	--card-lift: -4px;
+	--card-spot-opacity: 0.2;
+
+	/* 社交坞（横向玻璃胶囊） */
+	--dock-item: 42px;
+	--dock-gap: 4px;
+	--dock-padding: 6px;
+	--dock-bg: rgba(255, 255, 255, 0.72);
+	--dock-border: rgba(17, 24, 39, 0.08);
+	--dock-highlight: rgba(255, 255, 255, 0.95);
+	--dock-shadow: 0 10px 30px -14px rgba(15, 23, 42, 0.3), 0 2px 6px -2px rgba(15, 23, 42, 0.08);
+	--dock-icon: #24292f;
+	--dock-divider: rgba(17, 24, 39, 0.1);
+
+	/* 其他 */
+	--mini-program-dark-filter: brightness(80%);
+	--loading-bg: #e4e4e4;
+}
+
+html.dark {
+	color: #e5e7eb;
+
+	--main-bg-color: #242938;
+	--main-text-color: #fff;
+	--footer-text-color: #cbd5e1;
+	--author-dowm: #e4e4e430;
+
+	--card-bg: #22272eb8;
+	--card-hover-bg: rgba(255, 255, 255, 0.045);
+	--card-title-color: #fff;
+	--card-text-color: #9aa4b2;
+	--card-border: rgba(255, 255, 255, 0.07);
+	--card-border-hover: rgba(255, 255, 255, 0.16);
+	--card-shadow-near: rgba(0, 0, 0, 0.28);
+	--card-shadow-far: rgba(0, 0, 0, 0.55);
+	--card-spot-opacity: 0.3;
+
+	--dock-bg: rgba(30, 35, 44, 0.74);
+	--dock-border: rgba(255, 255, 255, 0.09);
+	--dock-highlight: rgba(255, 255, 255, 0.08);
+	--dock-shadow: 0 14px 34px -16px rgba(0, 0, 0, 0.8), 0 2px 6px -2px rgba(0, 0, 0, 0.45);
+	--dock-icon: #e6e9ef;
+	--dock-divider: rgba(255, 255, 255, 0.1);
+
+	--loading-bg: #000;
+}
