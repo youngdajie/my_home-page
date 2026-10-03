@@ -5,7 +5,7 @@
 		aria-label="切换深色/浅色模式"
 		:aria-pressed="isDark"
 		data-tip="昼夜切换"
-		@click="toggle"
+		@click="toggle($event)"
 	>
 		<span class="social-link__icon">
 			<Transition name="fade-scale" mode="out-in">

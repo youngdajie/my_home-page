@@ -1,22 +1,23 @@
 /**
- * social.css —— 社交 / 功能入口（横向玻璃坞）
+ * social.css —— 社交 / 功能入口（页面右上角的固定玻璃坞）
  *
- * 从「竖排小方块」改成横向玻璃胶囊：
- *  - 整条坞是一块玻璃面（blur + 顶部内高光 + 柔和外投影），比一堆独立方块更整体、更醒目
- *  - 每个入口是一枚圆形按钮，悬浮时品牌色从中心放大铺满 + 同色光晕
- *  - 提示气泡改到按钮正上方，带向下的小箭头，不再挤在侧面
- *  - 功能组与昼夜切换之间有一条细分隔线
+ *  - 固定在页面右上角，和左上角的悬浮 logo 对称；滚动时始终可达（昼夜切换随时能点）
+ *  - 宽屏是一枚玻璃胶囊；≤880px 变成贴边的全宽顶栏，并让 .main 让出顶部空间
+ *  - 悬浮时品牌色从中心放大铺满 + 同色光晕
+ *  - 提示气泡在按钮「下方」（坞贴着屏幕顶部，气泡飘在上方会被视口裁掉）
  */
 
 .social-links {
-	position: relative;
-	/* 用 flex 而不是 inline-flex：inline 级盒子会被模板里的换行空白顶出一个缩进，
-	   跟上方标题的左边缘对不齐 */
+	position: fixed;
+	top: 10px;
+	right: 12px;
+	/* 高于页面内容与 #universe(-1)；低于捐赠弹窗(100000) 与加载遮罩(999999) */
+	z-index: 30;
+
 	display: flex;
 	align-items: center;
 	gap: var(--dock-gap);
 	width: fit-content;
-	margin-top: 40px;
 	padding: var(--dock-padding);
 	border: 1px solid var(--dock-border);
 	border-radius: 999px;
@@ -46,6 +47,7 @@
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
+	flex: none;
 	width: var(--dock-item);
 	height: var(--dock-item);
 	padding: 0;
@@ -74,11 +76,12 @@
 	transition: opacity 0.24s ease, transform 0.34s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
+/* 坞在屏幕顶部，悬浮时向下"压"一下才符合直觉 */
 .social-link:hover,
 .social-link:focus-visible {
 	color: #fff;
-	transform: translateY(-4px);
-	box-shadow: 0 10px 20px -10px var(--social-accent);
+	transform: translateY(4px);
+	box-shadow: 0 -6px 18px -10px var(--social-accent);
 }
 
 .social-link:hover::before,
@@ -93,16 +96,16 @@
 }
 
 .social-link:active {
-	transform: translateY(-1px) scale(0.94);
+	transform: translateY(1px) scale(0.94);
 }
 
-/* --------------------------- 上方提示气泡 + 箭头 --------------------------- */
+/* --------------------------- 下方提示气泡 + 箭头 --------------------------- */
 
 .social-link::after {
 	content: attr(data-tip);
 	position: absolute;
 	left: 50%;
-	bottom: calc(100% + 14px);
+	top: calc(100% + 14px);
 	z-index: 30;
 	padding: 6px 10px;
 	border-radius: 8px;
@@ -115,15 +118,15 @@
 	box-shadow: 0 10px 22px -10px rgba(0, 0, 0, 0.5);
 	opacity: 0;
 	pointer-events: none;
-	transform: translateX(-50%) translateY(4px) scale(0.94);
-	transform-origin: center bottom;
+	transform: translateX(-50%) translateY(-4px) scale(0.94);
+	transform-origin: center top;
 	transition: opacity 0.18s ease, transform 0.26s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .social-link__caret {
 	position: absolute;
 	left: 50%;
-	bottom: calc(100% + 9px);
+	top: calc(100% + 9px);
 	z-index: 20;
 	width: 8px;
 	height: 8px;
@@ -144,6 +147,20 @@
 .social-link:focus-visible .social-link__caret {
 	opacity: 1;
 	transform: translateX(-50%) rotate(45deg) scale(1);
+}
+
+/* 坞贴在屏幕右侧，最后一个入口（昼夜切换）的气泡改成右对齐，
+   否则气泡按中心展开会顶到视口右缘被裁掉。箭头仍在按钮中心，落在气泡右半部分。 */
+.social-links > :last-child::after {
+	left: auto;
+	right: 0;
+	transform: translateY(-4px) scale(0.94);
+	transform-origin: right top;
+}
+
+.social-links > :last-child:hover::after,
+.social-links > :last-child:focus-visible::after {
+	transform: translateY(0) scale(1);
 }
 
 /* 强刷新进行中：图标持续旋转 */
@@ -174,14 +191,15 @@
 	}
 }
 
-@media (max-width: 600px) {
-	:root {
-		--dock-item: 40px;
-		--dock-gap: 2px;
-		--dock-padding: 5px;
-	}
-
+/* 窄屏：坞改成贴屏幕两侧的全宽顶栏，图标均分铺开。
+   此时 .main 会在顶部让出高度（见 base.css），标题不会被压住。 */
+@media (max-width: 880px) {
 	.social-links {
-		margin-top: 28px;
+		top: 10px;
+		left: 12px;
+		right: 12px;
+		width: auto;
+		justify-content: space-evenly;
+		gap: 0;
 	}
 }

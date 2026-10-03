@@ -398,3 +398,31 @@ html.dark .mini-program-preview {
 		font-size: 16px;
 	}
 }
+
+/* 社交坞固定在屏幕顶部（≤880px 时是全宽顶栏），正文要让出这块高度，
+   否则大标题会被压在坞下面。
+   必须排在 600px 那条之后 —— 那条的 `padding: 18px` 会把 padding-top 一起重置。 */
+@media (max-width: 880px) {
+	.main {
+		padding-top: 80px;
+	}
+}
+
+/* ---------------------- 昼夜切换：圆形揭幕动效 ---------------------- */
+/* 关掉默认的整页交叉淡入，只保留 JS 给 ::view-transition-new(root) 挂的
+   clip-path 圆形扩散动画。默认 ::view-transition-old(root) 在上层，这里把
+   new 抬到之上，于是新主题从点击处向外扩散、把旧主题「揭」掉
+   —— BewlyCat / BewlyBewly 的深色切换用的就是这套手法。 */
+::view-transition-old(root),
+::view-transition-new(root) {
+	animation: none;
+	mix-blend-mode: normal;
+}
+
+::view-transition-old(root) {
+	z-index: 1;
+}
+
+::view-transition-new(root) {
+	z-index: 2;
+}

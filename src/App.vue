@@ -20,6 +20,9 @@
 	<!-- 暗色模式下的星空背景 -->
 	<canvas id="universe" ref="universeRef" aria-hidden="true"></canvas>
 
+	<!-- 右上角社交坞（固定定位，和大标题左上的 logo 对称） -->
+	<SocialDock />
+
 	<div class="main">
 		<SiteHeader />
 		<MainContent />
@@ -35,6 +38,7 @@
 	import MainContent from '@/components/main/MainContent.vue'
 	import SiteFooter from '@/components/main/SiteFooter.vue'
 	import DonationDialog from '@/components/main/DonationDialog.vue'
+	import SocialDock from '@/components/others/SocialDock.vue'
 	import { siteConfig } from '@/site.config'
 	import { useStarfield } from '@/effects/starfield'
 

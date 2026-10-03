@@ -69,6 +69,99 @@ const resolveByPreference = (preference: ThemePreference): boolean => {
 	return mediaQuery()?.matches ?? false
 }
 
+/* ---------------------- 昼夜切换的圆形揭幕动效 ---------------------- */
+
+interface RevealOrigin {
+	x: number
+	y: number
+}
+
+const REVEAL_DURATION = 520
+
+const prefersReducedMotion = (): boolean =>
+	mediaQuery() !== null && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+const supportsViewTransition = (): boolean =>
+	typeof document.startViewTransition === 'function'
+
+/** 同一时刻只允许一个揭幕动画；连点时直接瞬时切换 */
+let revealing = false
+
+/**
+ * 切换主题，并（在支持 View Transition 的浏览器里）从 origin 处圆形扩散揭幕。
+ *
+ * 手法和 BewlyCat / BewlyBewly 的深色切换一致：View Transition API 会保留
+ * 新旧两帧快照，把 `::view-transition-new(root)` 抬到上层后，用 clip-path
+ * 的 circle() 从 0 放大到「能盖住最远那个角」的半径，视觉上就是新主题从
+ * 点击处扩散、把旧主题揭掉。
+ *
+ * 不支持 / 用户关闭动效 / 正在动画中 → 直接落地，功能不受影响。
+ */
+const switchTheme = (dark: boolean, origin: RevealOrigin): void => {
+	if (isDark.value === dark) return
+
+	const commit = (): void => {
+		isDark.value = dark
+		applyTheme(dark)
+	}
+
+	if (!supportsViewTransition() || prefersReducedMotion() || revealing) {
+		commit()
+		return
+	}
+
+	const radius = Math.hypot(
+		Math.max(origin.x, window.innerWidth - origin.x),
+		Math.max(origin.y, window.innerHeight - origin.y)
+	)
+
+	revealing = true
+	try {
+		const transition = document.startViewTransition(commit)
+
+		transition.ready
+			.then(() => {
+				document.documentElement.animate(
+					{
+						clipPath: [
+							`circle(0px at ${origin.x}px ${origin.y}px)`,
+							`circle(${radius}px at ${origin.x}px ${origin.y}px)`,
+						],
+					},
+					{
+						duration: REVEAL_DURATION,
+						easing: 'cubic-bezier(0.22, 1, 0.36, 1)',
+						pseudoElement: '::view-transition-new(root)',
+					}
+				)
+			})
+			.catch(() => {
+				/* 过渡被跳过 / 中断，快照已经是新主题，忽略即可 */
+			})
+
+		transition.finished.finally(() => {
+			revealing = false
+		})
+	} catch {
+		// startViewTransition 同步抛错时 commit 还没跑过，补一次
+		revealing = false
+		commit()
+	}
+}
+
+/** 键盘触发时 clientX/clientY 都是 0，回退到按钮中心，再不行用视口中心 */
+const resolveOrigin = (event?: MouseEvent): RevealOrigin => {
+	if (event && (event.clientX !== 0 || event.clientY !== 0)) {
+		return { x: event.clientX, y: event.clientY }
+	}
+	const target = (event?.currentTarget ?? event?.target) as Element | null
+	if (target && typeof target.getBoundingClientRect === 'function') {
+		const rect = target.getBoundingClientRect()
+		return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 }
+	}
+	return { x: window.innerWidth / 2, y: window.innerHeight / 2 }
+}
+
 /**
  * 尽早应用主题，避免首屏闪烁。
  * 在 main.ts 里 mount 之前同步调用。
@@ -83,17 +176,19 @@ export const initTheme = (preference: ThemePreference = siteConfig.hero.theme): 
 	if (mq && !readSavedPreference() && preference === 'auto') {
 		mq.addEventListener('change', (event) => {
 			if (readSavedPreference()) return
-			isDark.value = event.matches
-			applyTheme(event.matches)
+			switchTheme(event.matches, {
+				x: window.innerWidth / 2,
+				y: window.innerHeight / 2,
+			})
 		})
 	}
 }
 
 export const useTheme = () => {
-	const toggle = (): void => {
+	/** 传进来点击事件就能从点击处扩散揭幕 */
+	const toggle = (event?: MouseEvent): void => {
 		const next = !isDark.value
-		isDark.value = next
-		applyTheme(next)
+		switchTheme(next, resolveOrigin(event))
 		writeSavedPreference(next ? 'dark' : 'light')
 	}
 

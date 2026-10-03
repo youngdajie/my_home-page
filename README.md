@@ -9,7 +9,7 @@ my_home-page/
 │   ├── favicon.ico             # 兼容老浏览器
 │   ├── favicon.svg             # 矢量图标
 │   ├── apple-touch-icon.png    # iOS 桌面图标
-│   ├── icon-512.png            # PWA 图标
+│   ├── icon-256.png            # PWA 图标（256×256）
 │   ├── manifest.json           # PWA 清单
 │   ├── wxpay.avif              # 捐赠二维码
 │   └── images/                 # 站点配图（logo / 技能图 / 徽章 …）
