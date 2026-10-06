@@ -399,12 +399,11 @@ html.dark .mini-program-preview {
 	}
 }
 
-/* 社交坞固定在屏幕顶部（≤880px 时是全宽顶栏），正文要让出这块高度，
-   否则大标题会被压在坞下面。
+/* 社交坞固定在屏幕右上角，正文要让出这块高度，否则大标题会被压在坞下面。
    必须排在 600px 那条之后 —— 那条的 `padding: 18px` 会把 padding-top 一起重置。 */
 @media (max-width: 880px) {
 	.main {
-		padding-top: 80px;
+		padding-top: 68px;
 	}
 }
 

@@ -149,17 +149,38 @@ const switchTheme = (dark: boolean, origin: RevealOrigin): void => {
 	}
 }
 
-/** 键盘触发时 clientX/clientY 都是 0，回退到按钮中心，再不行用视口中心 */
-const resolveOrigin = (event?: MouseEvent): RevealOrigin => {
-	if (event && (event.clientX !== 0 || event.clientY !== 0)) {
-		return { x: event.clientX, y: event.clientY }
+/**
+ * 揭幕起点。
+ *
+ * 刻意**不用** click 事件的 clientX/clientY：
+ *  1. 触摸设备上合成 click 的坐标可能为 0 或不可靠（真实设备上会跑成左上角 (0,0)）；
+ *  2. 语义上就是「从这枚图标揭幕」，跟点中按钮的哪个位置无关。
+ * 所以统一取按钮自身的中心矩形，并做一次在视口内的合理性校验兜底。
+ */
+const resolveOrigin = (event?: Event): RevealOrigin => {
+	const fallback: RevealOrigin = {
+		x: window.innerWidth / 2,
+		y: window.innerHeight / 2,
 	}
-	const target = (event?.currentTarget ?? event?.target) as Element | null
-	if (target && typeof target.getBoundingClientRect === 'function') {
-		const rect = target.getBoundingClientRect()
-		return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 }
+
+	const el = (event?.currentTarget ?? event?.target) as Element | null
+	if (!el || typeof el.getBoundingClientRect !== 'function') return fallback
+
+	const rect = el.getBoundingClientRect()
+	if (rect.width <= 0 || rect.height <= 0) return fallback
+
+	const origin: RevealOrigin = {
+		x: rect.left + rect.width / 2,
+		y: rect.top + rect.height / 2,
 	}
-	return { x: window.innerWidth / 2, y: window.innerHeight / 2 }
+
+	// 兜底：必须落在视口内且不是原点，否则退回视口中心
+	const inViewport =
+		origin.x > 0 &&
+		origin.y > 0 &&
+		origin.x <= window.innerWidth &&
+		origin.y <= window.innerHeight
+	return inViewport ? origin : fallback
 }
 
 /**
@@ -185,8 +206,8 @@ export const initTheme = (preference: ThemePreference = siteConfig.hero.theme): 
 }
 
 export const useTheme = () => {
-	/** 传进来点击事件就能从点击处扩散揭幕 */
-	const toggle = (event?: MouseEvent): void => {
+	/** 传进来点击事件就能从那枚按钮中心揭幕 */
+	const toggle = (event?: Event): void => {
 		const next = !isDark.value
 		switchTheme(next, resolveOrigin(event))
 		writeSavedPreference(next ? 'dark' : 'light')

@@ -32,7 +32,7 @@
 	--card-spot-opacity: 0.2;
 
 	/* 社交坞（横向玻璃胶囊） */
-	--dock-item: clamp(38px, 11vw, 42px);
+	--dock-item: clamp(34px, 9vw, 42px);
 	--dock-gap: 4px;
 	--dock-padding: 6px;
 	--dock-bg: rgba(255, 255, 255, 0.72);

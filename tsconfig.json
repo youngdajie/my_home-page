@@ -27,9 +27,8 @@
 
     "types": ["node", "vite/client", "vite-plugin-pwa/client"],
 
-    "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["./src/*"]
     }
   },
   "include": [
