@@ -373,10 +373,6 @@ html.dark .dark-mode-hidden {
 	display: none !important;
 }
 
-html.dark .mini-program-preview {
-	filter: var(--mini-program-dark-filter);
-}
-
 /* -------------------------------- 响应式 -------------------------------- */
 
 @media screen and (max-width: 1176px) {

@@ -97,7 +97,7 @@
 		</div>
 
 		<!-- 小程序 / 公众号 -->
-		<h2 class="section-title dark-mode-hidden below-1176-hidden">
+		<h2 class="section-title below-1176-hidden">
 			<svg class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" width="26" height="26">
 				<path d="M588.8 588.8m-281.6 0a281.6 281.6 0 1 0 563.2 0 281.6 281.6 0 1 0-563.2 0Z" />
 				<path
@@ -106,8 +106,28 @@
 			</svg>
 			{{ miniProgram.title }}
 		</h2>
-		<div class="mini-program-panel dark-mode-hidden below-1176-hidden">
-			<img class="mini-program-preview" :src="miniProgram.image" :alt="miniProgram.alt" />
+		<div class="mini-program-panel below-1176-hidden">
+			<!-- 矢量图，二维码矩阵与原 PNG 逐模块一致；宽高即 SVG 的 viewBox 尺寸，用来占位防抖动。
+			     亮/暗两张按 html.dark 切换：SVG 被 <img> 引用时读不到页面主题，只能换图。
+			     暗色那张**不能 lazy**：它平时 display:none，懒加载会一直不下载，
+			     用户当场切主题时会闪一下空白，所以让它随页面一起加载。 -->
+			<img
+				class="mini-program-preview mini-program-preview--light"
+				:src="miniProgram.image"
+				:alt="miniProgram.alt"
+				width="960"
+				height="580"
+				loading="lazy"
+				decoding="async"
+			/>
+			<img
+				class="mini-program-preview mini-program-preview--dark"
+				:src="miniProgram.darkImage"
+				:alt="miniProgram.alt"
+				width="960"
+				height="580"
+				decoding="async"
+			/>
 		</div>
 	</div>
 </template>
@@ -149,6 +169,6 @@
 		flex-direction: column;
 		justify-content: center;
 		align-items: center;
-		width: 80%;
+		width: 100%;
 	}
 </style>

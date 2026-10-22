@@ -129,7 +129,10 @@ export interface SiteConfig {
 	}
 	miniProgram: {
 		title: string
+		/** 亮色模式的分享卡 */
 		image: string
+		/** 暗色模式专用版本 */
+		darkImage: string
 		alt: string
 	}
 	footer: {
@@ -340,8 +343,10 @@ export const siteConfig: SiteConfig = {
 
 	miniProgram: {
 		title: '小程序 / 公众号',
-		image: '/images/mini-program.png',
-		alt: '小程序',
+		image: '/images/mini-program.svg',
+		/** 暗色模式单独一张：SVG 在 <img> 里读不到 html.dark，只能按主题换图 */
+		darkImage: '/images/mini-program-dark.svg',
+		alt: '小杰杂记的公众号与小程序二维码',
 	},
 
 	footer: {
