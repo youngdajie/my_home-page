@@ -212,24 +212,39 @@ html.dark .subsite-grid {
 
 /* ---------------------------- 小程序预览 ---------------------------- */
 
-/* 卡片自带圆角和描边（见 public/images/mini-program.svg），
-   这里只负责铺满容器宽度，让二维码尽可能大 —— 扫得动才是这个区块的意义。 */
-.mini-program-preview {
+/* 卡片自带圆角和描边（见 public/images/mini-program*.svg），这里只负责铺满容器宽度。
+   宽/窄两套版式由 <picture media> 选，亮/暗由 html.dark 切（不能用
+   prefers-color-scheme：站点主题是手动切的类名，系统偏好不会跟着变）。 */
+.mini-program-art {
+	display: block;
 	width: 100%;
 }
 
-/* 亮 / 暗两张图二选一。不能用 prefers-color-scheme：站点主题是 html.dark 这个类，
-   用户手动切换时系统偏好并不会变。 */
-.mini-program-preview--dark {
-	display: none;
-}
-
-html.dark .mini-program-preview--light {
-	display: none;
-}
-
-html.dark .mini-program-preview--dark {
+.mini-program-art img {
 	display: block;
+	width: 100%;
+	height: auto;
+	/* 图片还没加载时先按比例占位，避免布局跳动 */
+	aspect-ratio: 960 / 580;
+}
+
+.mini-program-art--dark {
+	display: none;
+}
+
+html.dark .mini-program-art--light {
+	display: none;
+}
+
+html.dark .mini-program-art--dark {
+	display: block;
+}
+
+/* 窄屏（≤600）换成竖版构图：两张票根上下叠，二维码才不会被压到一百来像素 */
+@media (max-width: 600px) {
+	.mini-program-art img {
+		aspect-ratio: 360 / 640;
+	}
 }
 
 /* -------------------------------- 响应式 -------------------------------- */

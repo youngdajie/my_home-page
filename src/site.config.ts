@@ -129,10 +129,14 @@ export interface SiteConfig {
 	}
 	miniProgram: {
 		title: string
-		/** 亮色模式的分享卡 */
+		/** 亮色模式的分享卡（宽屏版） */
 		image: string
-		/** 暗色模式专用版本 */
+		/** 暗色模式专用版本（宽屏版） */
 		darkImage: string
+		/** 窄屏竖版：两张票根上下叠，二维码不会被缩得太小 */
+		narrowImage: string
+		/** 窄屏竖版 · 暗色 */
+		narrowDarkImage: string
 		alt: string
 	}
 	footer: {
@@ -346,6 +350,9 @@ export const siteConfig: SiteConfig = {
 		image: '/images/mini-program.svg',
 		/** 暗色模式单独一张：SVG 在 <img> 里读不到 html.dark，只能按主题换图 */
 		darkImage: '/images/mini-program-dark.svg',
+		/** 窄屏用的是竖版版式：两张票根上下叠，码才够大 */
+		narrowImage: '/images/mini-program-narrow.svg',
+		narrowDarkImage: '/images/mini-program-narrow-dark.svg',
 		alt: '小杰杂记的公众号与小程序二维码',
 	},
 
