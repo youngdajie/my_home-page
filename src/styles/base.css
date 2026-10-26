@@ -112,6 +112,11 @@ button:focus-visible {
    （如果把底色写在 body 上，会把星空画布整个盖住） */
 html {
 	background-color: var(--main-bg-color);
+	/* 永久给滚动条留位。捐赠弹窗打开时会上一把 overflow: hidden，
+	   滚动条一消失视口就宽出 6px，整页（含右上角社交坞这类 fixed 元素）
+	   会横跳一次，关掉再跳一次。留位后锁定前后布局完全一致（实测位移 0）。
+	   overlay 滚动条的平台（macOS / iOS）本来就不占位，这条不生效也无妨。 */
+	scrollbar-gutter: stable;
 }
 
 body {

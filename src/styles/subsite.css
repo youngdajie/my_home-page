@@ -212,12 +212,16 @@ html.dark .subsite-grid {
 
 /* ---------------------------- 小程序预览 ---------------------------- */
 
-/* 卡片自带圆角和描边（见 public/images/mini-program*.svg），这里只负责铺满容器宽度。
-   宽/窄两套版式由 <picture media> 选，亮/暗由 html.dark 切（不能用
-   prefers-color-scheme：站点主题是手动切的类名，系统偏好不会跟着变）。 */
+/* 卡片自带圆角和描边（见 public/images/mini-program*.svg）。
+   宽/窄两套版式由 <picture media> 选（只下载命中的那张），
+   亮/暗由 html.dark 切 —— 不能用 prefers-color-scheme：
+   站点主题是手动切的类名，系统偏好不会跟着变。
+   宽屏占 80%：横版本来就宽，铺满整段显得太压；
+   外层 .mini-program-panel 是 flex + align-items: center，会自动居中。
+   窄屏（≤600）走竖版，改回 100%，见下面的媒体查询。 */
 .mini-program-art {
 	display: block;
-	width: 100%;
+	width: 80%;
 }
 
 .mini-program-art img {
@@ -240,8 +244,13 @@ html.dark .mini-program-art--dark {
 	display: block;
 }
 
-/* 窄屏（≤600）换成竖版构图：两张票根上下叠，二维码才不会被压到一百来像素 */
+/* 窄屏（≤600）换成竖版构图：两张票根上下叠，二维码才不会被压到一百来像素。
+   竖版宽度改回 100%（80% 是给桌面横版的，手机上收窄反而显得畏缩）。 */
 @media (max-width: 600px) {
+	.mini-program-art {
+		width: 100%;
+	}
+
 	.mini-program-art img {
 		aspect-ratio: 360 / 640;
 	}
