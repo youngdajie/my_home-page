@@ -32,6 +32,21 @@ export type SocialAction = 'donate' | 'reset-cache'
 /** 主题偏好：auto 跟随系统 */
 export type ThemePreference = 'auto' | 'light' | 'dark'
 
+/** 捐赠弹窗里的一张收款图 */
+export interface DonationImage {
+	/** 亮色模式用的那张 */
+	src: string
+	/** 暗色模式专用；不填就两套主题共用 src */
+	darkSrc?: string
+	alt: string
+	/**
+	 * 原始像素尺寸。写进 <img width/height>，图片还没解码时浏览器也能按比例
+	 * 先把位置占住，弹窗不会先塌一下再撑开；CSS 的 --donation-ratio 也由它算出。
+	 */
+	width: number
+	height: number
+}
+
 export interface SocialLink {
 	/** 悬浮提示文案 */
 	tip: string
@@ -158,7 +173,7 @@ export interface SiteConfig {
 	donation: {
 		/** 弹窗标题（同时也是社交按钮的提示文案） */
 		tip: string
-		images: { src: string; alt: string }[]
+		images: DonationImage[]
 	}
 }
 
@@ -390,7 +405,16 @@ export const siteConfig: SiteConfig = {
 
 	donation: {
 		tip: '求打赏',
-		images: [{ src: '/wxpay.avif', alt: '微信赞赏码' }],
+		images: [
+			{
+				// 矢量赞赏券：二维码矩阵逐模块取自原 wxpay.avif，未重新编码
+				src: '/images/donation-card.svg',
+				darkSrc: '/images/donation-card-dark.svg',
+				alt: '微信赞赏码',
+				width: 400,
+				height: 518,
+			},
+		],
 	},
 }
 

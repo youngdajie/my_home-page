@@ -40,6 +40,8 @@
 	import DonationDialog from '@/components/main/DonationDialog.vue'
 	import SocialDock from '@/components/others/SocialDock.vue'
 	import { siteConfig } from '@/site.config'
+	import { preloadDonationCards } from '@/composables/useDonation'
+	import { useTheme } from '@/composables/useTheme'
 	import { useStarfield } from '@/effects/starfield'
 
 	const { logo } = siteConfig
@@ -47,11 +49,16 @@
 	const universeRef = ref<HTMLCanvasElement | null>(null)
 	useStarfield(universeRef)
 
+	const { isDark } = useTheme()
 	const loading = ref(true)
 
 	onMounted(() => {
 		window.setTimeout(() => {
 			loading.value = false
 		}, 530)
+
+		// 赞赏卡提前取：等首屏加载遮罩收完、别跟首屏资源抢带宽。
+		// 弹窗是 v-if 挂载的，不预取的话点开那一刻才开始下载，面板会先空一下。
+		window.setTimeout(() => preloadDonationCards(isDark.value), 1400)
 	})
 </script>

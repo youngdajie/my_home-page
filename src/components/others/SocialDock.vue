@@ -24,6 +24,8 @@
 				:data-tip="link.tip"
 				:aria-label="link.tip"
 				@click="link.activate"
+				@pointerenter="link.prefetch?.()"
+				@focus="link.prefetch?.()"
 			>
 				<AppIcon :name="link.icon" />
 				<span class="social-link__caret" aria-hidden="true"></span>

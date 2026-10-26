@@ -44,6 +44,10 @@
 
 	/* 其他 */
 	--loading-bg: #e4e4e4;
+
+	/* 捐赠弹窗：赞赏券的券纸中间调。图片还没解码完时面板就铺这个色，
+	   所以首帧看到的是「一张空券」而不是一块黑底。 */
+	--donation-paper: #eef5fd;
 }
 
 html.dark {
@@ -72,4 +76,7 @@ html.dark {
 	--dock-divider: rgba(255, 255, 255, 0.1);
 
 	--loading-bg: #000;
+
+	/* 券纸的暗色中间调（对应 donation-card-dark.svg 的 #2c3849 → #1d2635） */
+	--donation-paper: #242f42;
 }

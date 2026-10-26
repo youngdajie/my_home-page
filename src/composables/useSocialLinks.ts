@@ -1,7 +1,7 @@
 import { computed, ref, type ComputedRef, type Ref } from 'vue'
 import { useToast } from 'vue-toastification'
 import { socialLinks, type SocialIconName, type SocialLink } from '@/site.config'
-import { useDonation } from './useDonation'
+import { preloadDonationCards, useDonation } from './useDonation'
 
 /** 模板可直接消费的结构：a 标签与 button 标签统一成一种描述 */
 export interface ResolvedSocialLink {
@@ -14,6 +14,8 @@ export interface ResolvedSocialLink {
 	target: '_blank' | '_self' | undefined
 	rel: string | undefined
 	activate: (event: MouseEvent) => void
+	/** 指针悬停/聚焦时先做的准备工作（目前只有捐赠按钮用它提前拉图） */
+	prefetch?: () => void
 }
 
 const DEFAULT_ACCENT = '#1296db'
@@ -90,6 +92,8 @@ export const useSocialLinks = (): {
 						void activate(link)
 					}
 				},
+				// 鼠标移到按钮上到真的点下去之间通常有 200ms+，够图跑完；键盘聚焦同效
+				prefetch: link.action === 'donate' ? () => preloadDonationCards() : undefined,
 			}
 		})
 	)

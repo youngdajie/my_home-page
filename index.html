@@ -27,11 +27,22 @@
 		<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 		<link rel="manifest" href="/manifest.json">
 
-		<!-- 正文字体走 CDN，提前建连 -->
+		<!-- 正文字体走 CDN（自建仓库，四套霞鹜文楷的字重子集）。
+		     加载方式刻意不是阻塞式 <link rel=stylesheet>：
+		     CDN 一旦抽风，阻塞式样式表会把整页首屏一直卡住（实测旧地址 20s 无响应）。
+		     这里用「preload 抢优先级 + media=print 不阻塞渲染，到货后切回 all」，
+		     配合 CSS 里的 font-display: swap，最坏情况只是先用系统字体显示、随后换字。 -->
 		<link rel="preconnect" href="https://cdn.jsdmirror.com" crossorigin>
 		<link
+			rel="preload"
+			as="style"
+			href="https://cdn.jsdmirror.com/cnb/youngdajie/fonts@main/lxgw/style.min.css"
+		>
+		<link
 			rel="stylesheet"
-			href="https://cdn.jsdmirror.com/ajax/libs/lxgw-wenkai-screen-webfont/1.7.0/style.min.css"
+			href="https://cdn.jsdmirror.com/cnb/youngdajie/fonts@main/lxgw/style.min.css"
+			media="print"
+			onload="this.media='all'"
 		>
 	</head>
 	<body id="xiaojie_index">
