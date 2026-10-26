@@ -1,7 +1,16 @@
 <template>
 	<Transition name="dialog">
+		<!--
+			这里用 v-show 而不是 v-if，是实测后的结论，别改回去：
+			  v-if 时 <img> 是「打开那一刻才被创建」，浏览器要重新走一遍
+			  取图 → 解析 SVG → 光栅化。哪怕字节早就躺在 Service Worker 的
+			  Cache Storage 里，也要付一次 SW 中转（实测 194ms）+ 180ms 淡入，
+			  用户看到的就是「券先出来、码后到」。
+			  v-show 让 <img> 在页面加载时就挂上，ImageResource 一直活着，
+			  打开时只是把 display 从 none 换回 flex，没有任何取图动作。
+		-->
 		<div
-			v-if="isOpen"
+			v-show="isOpen"
 			class="donation-dialog"
 			role="dialog"
 			aria-modal="true"
@@ -10,18 +19,25 @@
 		>
 			<!--
 				面板本身不是「相框」，就是那张赞赏券的形状：
-				底色取券纸的中间调，图片还没解码完时看到的是一张空券，
+				底色取券纸的中间调，图片还没到之前看到的是一张空券，
 				而不是一块黑底（原来这里写死 #000，首帧就是一块纯黑）。
 			-->
 			<div class="donation-dialog__panel" :style="panelStyle">
+				<!-- 两张都常驻：切主题时只是换显示，不会触发新的取图 -->
 				<img
-					class="donation-dialog__qr"
-					:class="{ 'is-ready': ready }"
-					:src="cardSrc"
+					class="donation-dialog__qr donation-dialog__qr--light"
+					:src="currentImage.src"
 					:alt="currentImage.alt"
 					:width="currentImage.width"
 					:height="currentImage.height"
-					@load="ready = true"
+				/>
+				<img
+					v-if="currentImage.darkSrc"
+					class="donation-dialog__qr donation-dialog__qr--dark"
+					:src="currentImage.darkSrc"
+					:alt="currentImage.alt"
+					:width="currentImage.width"
+					:height="currentImage.height"
 				/>
 			</div>
 			<button type="button" class="donation-dialog__close" aria-label="关闭" @click="close">
@@ -37,28 +53,14 @@
 </template>
 
 <script setup lang="ts">
-	import { computed, onBeforeUnmount, ref, watch } from 'vue'
+	import { computed, onBeforeUnmount, watch } from 'vue'
 	import { siteConfig } from '@/site.config'
-	import { useDonation, donationCardSrc, isDonationCardReady } from '@/composables/useDonation'
-	import { useTheme } from '@/composables/useTheme'
+	import { useDonation } from '@/composables/useDonation'
 
 	const donation = siteConfig.donation
 	const { isOpen, activeIndex, close } = useDonation()
-	const { isDark } = useTheme()
 
 	const currentImage = computed(() => donation.images[activeIndex.value] ?? donation.images[0])
-
-	/** 亮/暗用同一张 <img> 换源，靠预取保证换过去是瞬时的 */
-	const cardSrc = computed(() => donationCardSrc(currentImage.value, isDark.value))
-
-	/**
-	 * 是否已经可以显示。初始值直接问预取缓存：已经 decode 过的图不该再做淡入，
-	 * 否则每开一次弹窗都要先闪一下空券。
-	 */
-	const ready = ref(isDonationCardReady(cardSrc.value))
-	watch(cardSrc, (src) => {
-		ready.value = isDonationCardReady(src)
-	})
 
 	/** 券的宽高比喂给 CSS，占位块和实体保持同一个比例和圆角 */
 	const panelStyle = computed(() => ({
@@ -119,21 +121,27 @@
 		width: 100%;
 		height: 100%;
 		display: block;
-		opacity: 0;
-		transition: opacity 0.18s linear;
 		/* 投影放在 CSS 而不是画进 SVG：drop-shadow 跟着图形的 alpha 走，
 		   所以两侧缺口也会在影子上留出来，而且不占画布边缘。 */
 		filter: drop-shadow(0 16px 30px rgba(9, 20, 38, 0.26));
 	}
 
-	:global(html.dark) .donation-dialog__qr {
-		filter: drop-shadow(0 18px 34px rgba(0, 0, 0, 0.55));
+	/* 亮/暗各挂一张，切主题只是换显示。刻意不给 opacity 加过渡：
+	   二维码淡入看起来像「加载」，反而像卡了 —— 要么在，要么不在。
+	   注意：这里必须写普通的 `html.dark .foo`，别套 :global()——
+	   Vue 的 scoped 编译只给最后一个选择器加 data-v，而 `:global(A) B`
+	   会被编成 `A` 一个裸选择器（踩过：编出了 `html.dark{display:none}`）。 */
+	.donation-dialog__qr--dark {
+		display: none;
 	}
 
-	/* 预取命中时 @load 可能在首帧之前就触发，这个过渡基本看不到；
-	   只有真没预取到（冷启动直接点进来）才会看到一点点淡入。 */
-	.donation-dialog__qr.is-ready {
-		opacity: 1;
+	html.dark .donation-dialog__qr--light {
+		display: none;
+	}
+
+	html.dark .donation-dialog__qr--dark {
+		display: block;
+		filter: drop-shadow(0 18px 34px rgba(0, 0, 0, 0.55));
 	}
 
 	.donation-dialog__close {

@@ -10,12 +10,16 @@ const isOpen = ref(false)
 const activeIndex = ref(0)
 
 /* ------------------------------ 图片预取 ------------------------------
- * 弹窗是 v-if 挂载的：打开那一刻 <img> 才被创建、图片才开始下载，
- * 这中间的空白就是用户眼里的「黑块」。所以提前把赞赏卡拉进内存并解码完，
- * 真正打开时直接上屏。
+ * 作用：把赞赏卡的字节尽早拉进缓存，别等到用户点开弹窗才发请求。
  *
- * decode() 和 onload 的区别是关键：onload 只代表字节到齐，位图未必已解码，
- * 首帧仍可能空一下；decode() 完成才是「能立刻画出来」。
+ * 但要清楚它的边界（2026-10-26 实测，别再指望它「打开即显示」）：
+ *   ① decode() 对 SVG 几乎是空操作 —— SVG 不是位图，浏览器在真正上屏时
+ *      才按当前尺寸光栅化，所以 decode() 完成 ≠ 首帧就有内容；
+ *   ② 命中 Service Worker 的 CacheFirst 也要走一次 SW 中转，
+ *      实测首个 <img> 从 Cache Storage 取回耗时 ~194ms。
+ * 真正让弹窗「打开即显示」的是 DonationDialog 里那个常驻的 <img>
+ * （v-show，页面加载时就挂上，ImageResource 一直活着）。
+ * 这里的预取是补充手段：负责喂另一套主题、以及别在点击那一下才开始下载。
  */
 const decoded = new Set<string>()
 const inflight = new Map<string, Promise<void>>()
@@ -45,11 +49,8 @@ const preload = (src: string): Promise<void> => {
 	return task
 }
 
-/** 某个地址是否已经解码完（弹窗据此决定要不要做淡入） */
-export const isDonationCardReady = (src: string): boolean => decoded.has(src)
-
 /** 把一张收款图按主题解析成实际地址 */
-export const donationCardSrc = (image: DonationImage, dark: boolean): string =>
+const donationCardSrc = (image: DonationImage, dark: boolean): string =>
 	(dark && image.darkSrc) || image.src
 
 type IdleWindow = Window & { requestIdleCallback?: (callback: () => void) => number }
