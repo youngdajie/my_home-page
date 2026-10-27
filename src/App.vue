@@ -1,7 +1,9 @@
 <template>
 	<div class="page-background"></div>
 
-	<div class="floating-logo dark-mode-hidden below-1176-hidden">
+	<!-- 左上角浮动 Logo：暗色下也显示（CSS 里垫了「暗玻璃 + 底部提亮」托住波浪）。
+	     窄屏不渲染，见 script 里的 showLogo。 -->
+	<div v-if="showLogo" class="floating-logo">
 		<img class="floating-logo__image" :src="logo.src" :alt="logo.alt" :title="logo.alt" />
 	</div>
 
@@ -33,7 +35,7 @@
 </template>
 
 <script setup lang="ts">
-	import { onMounted, ref } from 'vue'
+	import { onBeforeUnmount, onMounted, ref } from 'vue'
 	import SiteHeader from '@/components/main/SiteHeader.vue'
 	import MainContent from '@/components/main/MainContent.vue'
 	import SiteFooter from '@/components/main/SiteFooter.vue'
@@ -52,7 +54,23 @@
 	const { isDark } = useTheme()
 	const loading = ref(true)
 
+	/**
+	 * 左上角 Logo 只在桌面渲染。
+	 * 不用 CSS 的 display:none —— 被隐藏的 <img> 在 Chromium 里仍可能去下载
+	 * （实测 390px 下照样拉了这 21KB）。这里直接不创建元素，才是真的不下。
+	 */
+	const LOGO_QUERY = '(min-width: 1177px)'
+	const showLogo = ref(false)
+	let logoQuery: MediaQueryList | undefined
+	const syncLogo = (event: MediaQueryList | MediaQueryListEvent): void => {
+		showLogo.value = event.matches
+	}
+
 	onMounted(() => {
+		logoQuery = window.matchMedia(LOGO_QUERY)
+		syncLogo(logoQuery)
+		logoQuery.addEventListener('change', syncLogo)
+
 		window.setTimeout(() => {
 			loading.value = false
 		}, 530)
@@ -60,5 +78,9 @@
 		// 赞赏卡提前取：等首屏加载遮罩收完、别跟首屏资源抢带宽。
 		// 弹窗是 v-if 挂载的，不预取的话点开那一刻才开始下载，面板会先空一下。
 		window.setTimeout(() => preloadDonationCards(isDark.value), 1400)
+	})
+
+	onBeforeUnmount(() => {
+		logoQuery?.removeEventListener('change', syncLogo)
 	})
 </script>

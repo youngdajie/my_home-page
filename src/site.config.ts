@@ -217,8 +217,8 @@ export const siteConfig: SiteConfig = {
 	},
 
 	logo: {
-		src: '/images/logo.webp',
-		alt: 'logo',
+		src: '/images/logo.svg',
+		alt: '小杰杂记 Logo',
 	},
 
 	hero: {
