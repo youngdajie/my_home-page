@@ -7,9 +7,11 @@
 	/* 品牌色 */
 	--accent-blue: #1296db;
 	--accent-blue-soft: #1296db1f;
-	--gradient-start: #607df1;
-	--gradient-middle: #1296db;
-	--gradient-end: #607df1;
+	/* 主标题渐变（Yang.JIE）的三个色阶：基色 / 品牌蓝 / 高光。
+	   基色比品牌蓝深一档，白底才够对比；高光是缓慢扫过去的那道青。 */
+	--gradient-base: #0b74bd;
+	--gradient-brand: #1296db;
+	--gradient-glow: #6fe0fa;
 	--purple-text-color: #1296db;
 
 	/* 基础 */
@@ -79,4 +81,9 @@ html.dark {
 
 	/* 券纸的暗色中间调（对应 donation-card-dark.svg 的 #2c3849 → #1d2635） */
 	--donation-paper: #242f42;
+
+	/* 标题渐变整体提亮一档，深色底上才不发闷 */
+	--gradient-base: #3d8fd4;
+	--gradient-brand: #55b9ee;
+	--gradient-glow: #a8f0ff;
 }

@@ -288,42 +288,55 @@ html.dark .floating-logo__image--dark {
 	line-height: 1.6;
 }
 
+/* 主标题渐变（Yang.JIE）。
+ *
+ * 旧版是 #607df1 → #1296db 两段硬拼 + 2s 来回摆，字中间能看出明显的色界；
+ * 动画又是 ping-pong 的，看着像在"晃"而不是"流"。
+ *
+ * 现在：
+ *   - 一个周期 = 3 倍文字宽（background-size: 400%，周期写在图像的 75% 处）。
+ *     周期必须比字宽得多，否则整条深浅斜坡全压在字上，就成了"上下起伏"。
+ *     无缝条件：shift = (m-1)·C 必须正好是一个周期，即 周期 = 100(m-1)/(k·m)%。
+ *     m=4、k=1 → 75%，此时 shift = 3C = 一个周期，接缝处像素级一致（实测）。
+ *   - 中段刻意留了两段 #1296db 平台：大部分时间字是同一个蓝，只有一道高光经过。
+ *   - 线性单向 10s 一轮：慢，才像光从字上淌过去。
+ *   - in oklch 插值：sRGB 直线插值在这个蓝和深蓝之间会经过一段发灰的紫。
+ */
 .gradient-text {
 	font-family: 'a', 'LXGW WenKai Screen', sans-serif;
 	-webkit-background-clip: text;
 	background-clip: text;
 	-webkit-text-fill-color: transparent;
-	background-size: 200%;
-	background-position: 0%;
 	position: relative;
-	animation: backgroundSizeAnimation 2s ease-in-out infinite;
-	background-image: linear-gradient(
-		45deg,
-		var(--gradient-start),
-		var(--gradient-middle) 30%,
-		var(--gradient-end) 60%
+	background-image: repeating-linear-gradient(
+		100deg in oklch,
+		var(--gradient-base) 0%,
+		var(--gradient-brand) 13%,
+		var(--gradient-brand) 26%,
+		var(--gradient-glow) 33%,
+		var(--gradient-brand) 40%,
+		var(--gradient-brand) 53%,
+		var(--gradient-base) 75%
 	);
+	background-size: 400% 100%;
+	background-position: 0% 50%;
+	animation: gradient-flow 10s linear infinite;
 }
 
-@keyframes backgroundSizeAnimation {
-	0% {
-		background-position: 100%;
+@keyframes gradient-flow {
+	from {
+		background-position: 0% 50%;
 	}
 
-	25% {
-		background-position: 50%;
+	to {
+		background-position: 100% 50%;
 	}
+}
 
-	50% {
-		background-position: 0%;
-	}
-
-	75% {
-		background-position: 50%;
-	}
-
-	100% {
-		background-position: 100%;
+/* 关掉动效偏好下别动：渐变本身还在，只是不流动 */
+@media (prefers-reduced-motion: reduce) {
+	.gradient-text {
+		animation: none;
 	}
 }
 

@@ -56,13 +56,18 @@
 		list-style: none;
 	}
 
+	/* 徽章只放大、不上移。进出用两条不同的曲线：
+	   进入时轻微过冲（0.34,1.42）显得有弹性，移出时换成慢收尾的 ease-out
+	   （0.22,1），落回原位的最后一段是「慢慢刹住」而不是线性缩回去。 */
 	.footer__badges a {
 		display: block;
-		transition: transform 0.3s ease, opacity 0.3s ease;
+		transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
 	}
 
 	.footer__badges a:hover {
-		transform: translateY(-3px);
+		transform: scale(1.06);
+		transition-duration: 0.28s;
+		transition-timing-function: cubic-bezier(0.34, 1.42, 0.64, 1);
 	}
 
 	.footer__badges img {
