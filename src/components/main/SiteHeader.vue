@@ -38,10 +38,31 @@
 	const typingRef = ref<HTMLElement | null>(null)
 	let typed: Typed | null = null
 
+	/**
+	 * Fisher-Yates 洗牌：每进一次页面，语录顺序都不一样。
+	 *
+	 * 为什么要打乱：现在有 38 条，typeSpeed 100ms + backDelay 3000ms 跑完一轮要
+	 * 三分半，而访客往往只待几十秒 —— 不打乱的话，所有人每次都只看到开头那几条，
+	 * 后面的等于不存在。
+	 *
+	 * 只在挂载时洗一次（不是每轮洗）：Typed 循环的是同一个数组实例，
+	 * 中途换顺序反而会让正在打字的那条被顶掉。
+	 */
+	const shuffle = <T>(list: readonly T[]): T[] => {
+		const out = [...list]
+		for (let i = out.length - 1; i > 0; i--) {
+			const j = Math.floor(Math.random() * (i + 1))
+			const tmp = out[i]
+			out[i] = out[j]
+			out[j] = tmp
+		}
+		return out
+	}
+
 	onMounted(() => {
 		if (!typingRef.value) return
 		typed = new Typed(typingRef.value, {
-			strings: [...hero.quotes],
+			strings: shuffle(hero.quotes),
 			typeSpeed: 100,
 			startDelay: 500,
 			showCursor: true,
