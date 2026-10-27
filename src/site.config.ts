@@ -109,6 +109,8 @@ export interface SiteConfig {
 	/** 左上角悬浮 Logo */
 	logo: {
 		src: string
+		/** 暗色专用版；不填就两套主题共用 src */
+		darkSrc?: string
 		alt: string
 	}
 	hero: {
@@ -218,6 +220,8 @@ export const siteConfig: SiteConfig = {
 
 	logo: {
 		src: '/images/logo.svg',
+		/** 暗色版是另一张图，不是滤镜：白描边去掉、船身换浅灰、红帆压暗 */
+		darkSrc: '/images/logo-dark.svg',
 		alt: '小杰杂记 Logo',
 	},
 

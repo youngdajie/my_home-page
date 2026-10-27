@@ -257,19 +257,20 @@ body {
 	box-shadow: 0 10px 24px #00000033;
 }
 
-/* 暗色下这张图也得显示：图标底部的船身和波浪是黑的，直接压在深色页面上会糊成
-   一团。所以垫一层「暗玻璃 + 底部提亮」：整块先当玻璃片，底部再渐亮到灰，
-   黑色波浪就有依托了；上半部分的舵轮和红帆仍然坐在暗底上，不会被衬灰。
-   （试过纯线性渐变，整块会变成灰按钮，不好看。） */
-html.dark .floating-logo__image {
+/* 亮/暗各一张图。暗色版是把白描边去掉、船身换成浅灰、红帆压暗的独立 SVG，
+   所以这里不需要滤镜，也不需要垫渐变 —— 只有一层玻璃底把图标从星空里托起来。 */
+.floating-logo__image--dark {
+	display: none;
+}
+
+html.dark .floating-logo__image--light {
+	display: none;
+}
+
+html.dark .floating-logo__image--dark {
+	display: block;
 	background-color: rgba(255, 255, 255, 0.05);
-	background-image: linear-gradient(
-		to top,
-		rgba(203, 213, 225, 0.44) 0%,
-		rgba(203, 213, 225, 0.22) 15%,
-		rgba(148, 163, 184, 0) 46%
-	);
-	border-color: rgba(255, 255, 255, 0.08);
+	border-color: rgba(255, 255, 255, 0.1);
 	box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
 }
 

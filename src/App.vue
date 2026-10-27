@@ -1,10 +1,22 @@
 <template>
 	<div class="page-background"></div>
 
-	<!-- 左上角浮动 Logo：暗色下也显示（CSS 里垫了「暗玻璃 + 底部提亮」托住波浪）。
-	     窄屏不渲染，见 script 里的 showLogo。 -->
+	<!-- 左上角浮动 Logo：亮/暗各挂一张常驻 <img>，切主题只换显示。
+	     暗色版是单独一张图（白描边去掉、船身换浅灰），不是靠滤镜或垫底色。 -->
 	<div v-if="showLogo" class="floating-logo">
-		<img class="floating-logo__image" :src="logo.src" :alt="logo.alt" :title="logo.alt" />
+		<img
+			class="floating-logo__image floating-logo__image--light"
+			:src="logo.src"
+			:alt="logo.alt"
+			:title="logo.alt"
+		/>
+		<img
+			v-if="logo.darkSrc"
+			class="floating-logo__image floating-logo__image--dark"
+			:src="logo.darkSrc"
+			:alt="logo.alt"
+			:title="logo.alt"
+		/>
 	</div>
 
 	<!-- 首屏加载遮罩：530ms 后淡出 -->
