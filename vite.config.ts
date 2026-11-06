@@ -15,15 +15,6 @@ const STATIC_FILE_PATTERN =
 	/\.(?:ico|png|jpe?g|gif|svg|webp|avif|bmp|woff2?|ttf|otf|eot|mp3|mp4|webm|xml|txt|json|webmanifest|map)$/i
 
 /**
- * static@jie 的接管范围：站点自己的静态依赖。
- *
- * 比 STATIC_FILE_PATTERN 多了 css / js —— 这两个已经从 globPatterns 里移出，
- * 不再预缓存，交给运行时缓存。产物文件名带 hash，用 CacheFirst 不会拿到旧内容。
- */
-const STATIC_ASSET_PATTERN =
-	/\.(?:css|m?js|ico|svg|png|jpe?g|gif|webp|avif|bmp|woff2?|ttf|otf|eot|mp3|mp4|webm|xml|txt|json|webmanifest|map)$/i
-
-/**
  * 字体资源（霞鹜文楷）：woff2 分片子集 + 一份字体 CSS，都在自建 CDN 上，和站点不同源。
  *
  * 这个正则**必须以 `^https://` 打头**，不能像 STATIC_FILE_PATTERN 那样只写后缀。
@@ -81,15 +72,16 @@ export default defineConfig({
 			registerType: 'autoUpdate',
 			workbox: {
 				cleanupOutdatedCaches: true,
-				// 默认 globPatterns 只预缓存 html/js/css；这里把图标也纳入预缓存，
-				// 避免图标走运行时缓存时被错误响应污染。图片/字体体积大，交给运行时缓存。
-				// 预缓存只装 index.html 和 registerSW.js。
-				// 原因：navigateFallback 底层是 createHandlerBoundToURL('/index.html')，
-				// 它会校验该 URL 在不在 manifest 里，不在就直接抛错。
-				// registerSW.js 必须留在预缓存：它的 URL 不带 hash，落到 static@jie
-				// 会被 CacheFirst 永久锁在旧版本。
-				// 其它静态资源都交给 static@jie / font@jie-v1 这两条运行时缓存。
-				globPatterns: ['**/*.html', 'registerSW.js'],
+				// 预缓存管：index.html、registerSW.js、以及构建产物 assets/*.js 和 *.css。
+				//
+				// 为什么这几类必须走预缓存而不是运行时 CacheFirst：预缓存每个条目都带
+				// `?__WB_REVISION__=<内容hash>` 作为缓存 key，内容一变 key 就变，
+				// SW 安装时必然重新下载，激活时 cleanupOutdatedCaches() 再把旧的删掉。
+				// 运行时 CacheFirst 用裸 URL 做 key，内容变了 URL 没变 -> 永远拿旧的。
+				// （registerSW.js 尤其危险：它决定 SW 怎么注册，锁旧了连更新都推不下去。）
+				//
+				// ico 不在这里：它归 static@jie，靠运行时缓存。
+				globPatterns: ['**/*.{html,js,css}'],
 				navigateFallback: '/index.html',
 				// 关键：直接访问 /favicon.ico 这类静态文件不做导航回退
 				navigateFallbackDenylist: [STATIC_FILE_PATTERN],
@@ -118,15 +110,14 @@ export default defineConfig({
 						},
 					},
 					{
-						// 站点自己的静态依赖：css / js / ico / 图片 / 音视频等。
-						// 用 CacheFirst 是安全的——产物文件名带 hash，内容变了 URL 就变了。
-						urlPattern: STATIC_ASSET_PATTERN,
+						// 站点自己的静态依赖：ico / 图片 / 音视频 / manifest 等。
+						// css 和 js 不在这条里，它们在预缓存（见上面的 globPatterns）。
+						urlPattern: STATIC_FILE_PATTERN,
 						handler: 'CacheFirst',
 						options: {
 							cacheName: 'static@jie',
 							expiration: {
-								// 比原来 100 略放大：css/js 也进来了，每次发版会多 2 个新条目
-								maxEntries: 120,
+								maxEntries: 100,
 								maxAgeSeconds: 30 * 24 * 60 * 60, // 缓存 30 天
 							},
 							cacheableResponse: {
