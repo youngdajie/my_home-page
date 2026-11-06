@@ -14,6 +14,20 @@ import { siteConfig } from './src/site.config.ts'
 const STATIC_FILE_PATTERN =
 	/\.(?:ico|png|jpe?g|gif|svg|webp|avif|bmp|woff2?|ttf|otf|eot|mp3|mp4|webm|xml|txt|json|webmanifest|map)$/i
 
+/**
+ * 字体资源（霞鹜文楷）：woff2 分片子集 + 一份字体 CSS，都在自建 CDN 上，和站点不同源。
+ *
+ * 这个正则**必须以 `^https://` 打头**，不能像 STATIC_FILE_PATTERN 那样只写后缀。
+ * 原因在 Workbox 的 RegExpRoute：跨域请求只有 `result.index === 0`（从头匹配上）
+ * 才会被接管，只匹配到 URL 末尾的正则会被静默丢弃。
+ * 实测：用后缀正则时 30 条字体请求全都进了 SW 的 fetch 事件，Cache.put 调用 0 次。
+ *
+ * 域名写死在这里，换 CDN 时要和 index.html 里的样式表地址一起改
+ * （那边是 `cdn.jsdmirror.com/cnb/youngdajie/fonts@main/lxgw/style.min.css`）。
+ */
+const FONT_ASSET_PATTERN =
+	/^https:\/\/cdn\.jsdmirror\.com\/cnb\/youngdajie\/fonts@main\/.*\.(?:woff2|css)$/
+
 const escapeHtml = (value: string): string =>
 	value
 		.replace(/&/g, '&amp;')
@@ -65,6 +79,24 @@ export default defineConfig({
 				// 关键：直接访问 /favicon.ico 这类静态文件不做导航回退
 				navigateFallbackDenylist: [STATIC_FILE_PATTERN],
 				runtimeCaching: [
+					{
+						// 字体：woff2 子集与字体 CSS 共用同一个缓存，一条路由搞定。
+						// 拆成两条缓存反而会出问题——ExpirationPlugin 是按 cacheName
+						// 对整个缓存做淘汰的，两个实例会互相删对方的条目。
+						urlPattern: FONT_ASSET_PATTERN,
+						handler: 'CacheFirst',
+						options: {
+							cacheName: 'font-cache-v1',
+							expiration: {
+								// 故意不写 maxAgeSeconds：跨域响应读不到 Date 头
+								// （它不在 CORS 安全列表里），workbox 的 _isResponseDateFresh
+								// 遇到 null 直接判"永远新鲜"，写多少天都不会过期，纯误导。
+								// 换字体时把 cacheName 升到 v2，老缓存自然不再被使用。
+								maxEntries: 60,
+							},
+							cacheableResponse: { statuses: [0, 200] },
+						},
+					},
 					{
 						urlPattern: /\.html$/,
 						handler: 'NetworkFirst', // 优先从网络获取，如果失败则从缓存中获取
