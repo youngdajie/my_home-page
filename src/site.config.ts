@@ -335,7 +335,7 @@ export const siteConfig: SiteConfig = {
 			{
 				title: '监控',
 				url: 'https://up.yangjie.site',
-				desc: '基于 UptimeRobot 接口做的监控网站，接口十分有九分的不稳定，多刷新，只当个在线检测器，监测结果不准，优势是去服务器化，零成本',
+				desc: '站点监控，实时监测<br><br>跑在腾讯云 EdgeOne Makers 上的 Serverless 状态页',
 				accent: cardAccent.dark,
 			},
 			{
