@@ -359,7 +359,7 @@ export const siteConfig: SiteConfig = {
 			{
 				title: '壁纸',
 				url: 'https://wallpaper.yangjie.site',
-				desc: '由 Node.js&Next.js 驱动的壁纸收藏网站，CNB 托管，EdgeOne Makers 分发，资源由 JSDMirror CDN 提供加速和外链服务',
+				desc: '由 Node.js & Next.js 驱动的壁纸收藏网站，CNB 托管，EdgeOne Makers 分发，资源由 JSDMirror CDN 提供加速和外链服务',
 				accent: cardAccent.soft,
 			},
 			{
