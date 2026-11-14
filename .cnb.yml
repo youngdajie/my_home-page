@@ -1,0 +1,47 @@
+# ============================================================================
+# CNB 流水线：push 到 main 时通知 EdgeOne Pages 拉取最新代码并构建部署
+# ----------------------------------------------------------------------------
+# 无需密钥仓库、无需发邮件：EdgeOne 的这个 hook 地址是公开的固定 URL，
+# 只做「触发构建」这一件事，不泄露敏感信息，可以直接写在配置里。
+#
+# 重试做在同一个步骤内部（退避重试 8 次，约 5 分钟内打完）：
+# 通知偶发失败多为网络抖动（TLS 被断开 / unexpected eof），重试即好。
+# 只有 8 次全失败这一步才会失败，避免「假警报」。
+# ============================================================================
+
+main:
+  push:
+    - stages:
+        - name: 通知 EdgeOne 部署
+          image: curlimages/curl:latest
+          script: |
+            set -u
+            HOOK="https://api.edgeone.ai/eo/pages/hook/cnb"
+            TRIES=8
+
+            # JSON 字符串转义：先去掉换行/回车，再转义反斜杠与双引号
+            esc() { printf '%s' "${1:-}" | tr -d '\r\n' | sed 's/\\/\\\\/g; s/"/\\"/g'; }
+
+            if [ -z "${CNB_REPO_NAME:-}" ] || [ -z "${CNB_REPO_URL_HTTPS:-}" ]; then
+              echo "缺少 CNB_REPO_NAME / CNB_REPO_URL_HTTPS，无法通知，请检查 CNB 环境变量"
+              exit 1
+            fi
+
+            payload=$(printf '{"repoName":"%s","repoUrl":"%s","branch":"%s","commit":"%s","committer":"%s","event":"%s","buildId":"%s","buildWebUrl":"%s"}' \
+              "$(esc "$CNB_REPO_NAME")" "$(esc "$CNB_REPO_URL_HTTPS")" "$(esc "${CNB_BRANCH:-}")" \
+              "$(esc "${CNB_COMMIT_SHORT:-}")" "$(esc "${CNB_COMMITTER:-}")" "$(esc "${CNB_EVENT:-push}")" \
+              "$(esc "${CNB_BUILD_ID:-}")" "$(esc "${CNB_BUILD_WEB_URL:-}")")
+
+            i=0
+            while [ "$i" -lt "$TRIES" ]; do
+              i=$((i + 1))
+              echo "第 $i/$TRIES 次尝试通知 EdgeOne ..."
+              if curl -fsS -m 20 -X POST -H 'Content-Type: application/json' --data-binary "$payload" "$HOOK"; then
+                echo "通知成功（第 $i 次）"
+                exit 0
+              fi
+              sleep $((i * 5))
+            done
+
+            echo "重试 $TRIES 次仍失败：EdgeOne 侧大概不通，稍后在 CNB 上重新运行一次这条流水线即可"
+            exit 1
